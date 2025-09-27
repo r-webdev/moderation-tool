@@ -1,5 +1,5 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
-import { config } from "./env.js";
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { config } from './env.js';
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
