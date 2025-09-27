@@ -1,37 +1,39 @@
-import { existsSync, readFileSync } from "fs";
-import { join } from "path";
+import "./loadEnvFile";
 
-// Simple .env loader without external dependencies
-function loadEnvFile(filePath: string) {
-  if (!existsSync(filePath)) {
-    return;
+function requireEnv(key: string): string {
+  const value = process.env[key];
+  if (!value) {
+    console.error(`❌ Required environment variable ${key} is not set`);
+    console.error("Please check your .env.local file or CI/CD configuration");
+    process.exit(1);
   }
-
-  try {
-    const content = readFileSync(filePath, "utf8");
-    const lines = content.split("\n");
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith("#")) {
-        const [key, ...valueParts] = trimmed.split("=");
-        if (key && valueParts.length > 0) {
-          const value = valueParts.join("=");
-          // Only set if not already set (allows CI/CD to override)
-          if (!process.env[key.trim()]) {
-            process.env[key.trim()] = value.trim();
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.warn(`Warning: Could not load ${filePath}`);
-    console.warn("Make sure a valid .env.local file exists.");
-    console.warn(error);
-  }
+  return value;
 }
 
-// Load local environment file if it exists
-loadEnvFile(join(process.cwd(), ".env.local"));
+// Single source of truth for all configuration
+export const config = {
+  discord: {
+    token: requireEnv("DISCORD_TOKEN"),
+    clientId: requireEnv("CLIENT_ID"),
+  },
+  // Add more config sections as needed:
+  // database: {
+  //   url: requireEnv('DATABASE_URL'),
+  // },
+  // api: {
+  //   openaiKey: optionalEnv('OPENAI_API_KEY'),
+  // },
+};
 
-export {};
+export type Config = typeof config;
+
+// Log loaded configuration (without sensitive values)
+console.log("✅ Configuration loaded successfully");
+console.log(
+  `📋 Client ID: ${
+    config.discord.clientId ? config.discord.clientId : "❌ missing"
+  }`
+);
+console.log(
+  `🔑 Token: ${config.discord.token ? "***configured***" : "❌ missing"}`
+);
