@@ -13,7 +13,8 @@
     "declaration": false,
     "outDir": "./dist",
     "rootDir": "./",
-    "noEmit": true
+    "noEmit": true,
+    "erasableSyntaxOnly": true
   },
   "include": ["*.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]
