@@ -165,3 +165,6 @@ tmp/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# esbuild metafile
+meta.json
