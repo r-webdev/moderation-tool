@@ -5,11 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "esbuild index.ts --bundle --platform=node --outfile=dist/index.js --target=node22 --minify",
-    "build:analyze": "esbuild index.ts --bundle --platform=node --outfile=dist/index.js --target=node22 --minify --metafile=meta.json --analyze",
-    "start": "node dist/index.js",
-    "dev": "pnpm run build && node --watch dist/index.js",
-    "dev:build": "esbuild index.ts --bundle --platform=node --outfile=dist/index.js --target=node22 --watch",
+    "build": "tsc --outDir dist NODE_ENV=production",
+    "start": "node dist/index.js NODE_ENV=production",
+    "dev": "tsx --watch index.ts NODE_ENV=development",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
@@ -27,9 +25,9 @@
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
     "@types/node": "^24.5.2",
-    "esbuild": "^0.25.10",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   },
   "lint-staged": {
