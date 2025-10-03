@@ -1,6 +1,7 @@
 import { ping } from "./ping.js";
-import type { Command } from "./types.js";
+import { reportMessage } from "./reportMessage.js";
 
-export const commands: Record<string, Command> = {
+export const commands = {
   ping,
-};
+  reportMessage: reportMessage,
+} as const;
