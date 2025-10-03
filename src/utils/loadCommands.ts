@@ -19,7 +19,7 @@ export async function loadCommands(client: Client) {
   let loaded = 0;
   for (const [key, value] of Object.entries(commands)) {
     if (isCommandLike(value)) {
-      client.commands.set(key, value);
+      client.commands.set(value.data.name, value);
       loaded += 1;
     } else {
       console.warn(`[WARNING] Command '${key}' from barrel file is missing required properties.`);
