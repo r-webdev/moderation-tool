@@ -1,4 +1,6 @@
-import "./loadEnvFile";
+if (process.env.NODE_ENV === "development") {
+  await import("./loadEnvFile");
+}
 
 function requireEnv(key: string): string {
   const value = process.env[key];
@@ -29,11 +31,5 @@ export type Config = typeof config;
 
 // Log loaded configuration (without sensitive values)
 console.log("✅ Configuration loaded successfully");
-console.log(
-  `📋 Client ID: ${
-    config.discord.clientId ? config.discord.clientId : "❌ missing"
-  }`
-);
-console.log(
-  `🔑 Token: ${config.discord.token ? "***configured***" : "❌ missing"}`
-);
+console.log(`📋 Client ID: ${config.discord.clientId ? config.discord.clientId : "❌ missing"}`);
+console.log(`🔑 Token: ${config.discord.token ? "***configured***" : "❌ missing"}`);
