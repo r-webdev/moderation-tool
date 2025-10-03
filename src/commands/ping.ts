@@ -4,7 +4,14 @@ import type { Command } from "./types.js";
 const data = new SlashCommandBuilder().setName("ping").setDescription("Replies with Pong!");
 
 async function execute(interaction: CommandInteraction) {
-  await interaction.reply("Pong!");
+  const startTime = Date.now();
+
+  await interaction.deferReply();
+
+  const responseTime = Date.now() - startTime;
+  const wsPing = interaction.client.ws.ping;
+
+  await interaction.editReply(`🏓 Pong! Response: ${responseTime}ms | WebSocket: ${wsPing}ms`);
 }
 
 export const ping: Command = {
