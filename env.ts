@@ -17,6 +17,7 @@ export const config = {
   discord: {
     token: requireEnv("DISCORD_TOKEN"),
     clientId: requireEnv("CLIENT_ID"),
+    guildId: process.env.GUILD_ID,
   },
   // Add more config sections as needed:
   // database: {
@@ -33,3 +34,4 @@ export type Config = typeof config;
 console.log("✅ Configuration loaded successfully");
 console.log(`📋 Client ID: ${config.discord.clientId ? config.discord.clientId : "❌ missing"}`);
 console.log(`🔑 Token: ${config.discord.token ? "***configured***" : "❌ missing"}`);
+console.log(`🔑 Guild ID: ${config.discord.guildId ? config.discord.guildId : "Global"}`);
