@@ -14,7 +14,7 @@ async function execute(interaction: CommandInteraction) {
   await interaction.editReply(`🏓 Pong! Response: ${responseTime}ms | WebSocket: ${wsPing}ms`);
 }
 
-export const ping: Command = {
+export const ping: Command<CommandInteraction> = {
   data,
   execute,
 };
