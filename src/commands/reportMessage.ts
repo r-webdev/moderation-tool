@@ -17,12 +17,15 @@ async function execute(interaction: MessageContextMenuCommandInteraction) {
   const reporter = interaction.user;
 
   if (!guild) {
-    await interaction.reply({ content: "This can only be used in a server.", ephemeral: true });
+    await interaction.reply({
+      content: "This can only be used in a server.",
+      ephemeral: true,
+    });
     return;
   }
 
   try {
-    const channelId = "1407649112228368474";
+    const channelId = "1430210468693282948";
     const channel = await guild.channels.fetch(channelId);
     if (!channel || channel.type !== ChannelType.GuildText) {
       await interaction.reply({
@@ -43,7 +46,11 @@ async function execute(interaction: MessageContextMenuCommandInteraction) {
       .setURL(jumpLink)
       .addFields(
         { name: "Reporter", value: `<@${reporter.id}>`, inline: true },
-        { name: "Message Link", value: `[Jump to message](${jumpLink})`, inline: true },
+        {
+          name: "Message Link",
+          value: `[Jump to message](${jumpLink})`,
+          inline: true,
+        },
         { name: "Message ID", value: targetMessage.id, inline: true },
         { name: "Username", value: authorTag, inline: true },
         { name: "User ID", value: authorId, inline: true },
@@ -58,7 +65,10 @@ async function execute(interaction: MessageContextMenuCommandInteraction) {
     });
   } catch (error) {
     console.error(error);
-    await interaction.reply({ content: "Failed to report the message.", ephemeral: true });
+    await interaction.reply({
+      content: "Failed to report the message.",
+      ephemeral: true,
+    });
   }
 }
 

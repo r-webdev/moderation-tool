@@ -1,39 +1,39 @@
 {
-  "name": "discord-moderation-tool",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "build:ci": "NODE_ENV=production tsc --outDir dist",
-    "start:ci": "NODE_ENV=production node dist/index.js ",
-    "dev": "NODE_ENV=development tsx --watch index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --fix .",
-    "format": "biome format --write .",
-    "check": "biome check .",
-    "check:fix": "biome check --write .",
-    "prepare": "husky",
-    "pre-commit": "lint-staged"
-  },
-  "license": "MIT",
-  "packageManager": "pnpm@10.17.1",
-  "dependencies": {
-    "discord.js": "^14.22.1"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
-    "@types/node": "^24.5.2",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.1",
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.2"
-  },
-  "lint-staged": {
-    "*.{ts,js}": [
-      "biome format --write",
-      "biome lint --fix"
-    ]
-  }
+	"name": "discord-moderation-tool",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"build:ci": "NODE_ENV=production tsc --outDir dist",
+		"start:ci": "NODE_ENV=production node dist/index.js ",
+		"dev": "NODE_ENV=development tsx --watch src/index.ts",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --fix .",
+		"format": "biome format --write .",
+		"check": "biome check .",
+		"check:fix": "biome check --write .",
+		"prepare": "husky",
+		"pre-commit": "lint-staged"
+	},
+	"license": "MIT",
+	"packageManager": "pnpm@10.17.1",
+	"dependencies": {
+		"discord.js": "^14.22.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.4",
+		"@types/node": "^24.5.2",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.1",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.2"
+	},
+	"lint-staged": {
+		"*.{ts,js}": [
+			"biome format --write",
+			"biome lint --fix"
+		]
+	}
 }
