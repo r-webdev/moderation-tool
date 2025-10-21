@@ -132,7 +132,6 @@ dist/
 out/
 
 # IDE files
-.vscode/
 .idea/
 *.swp
 *.swo
