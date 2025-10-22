@@ -161,7 +161,7 @@ import { messageCreateEvent } from "./message-create/index.js";
 import { readyEvent } from "./ready/index.js";
 import type { DiscordEvent } from "./types.js";
 
-export const events = [readyEvent, messageCreateEvent] as DiscordEvent[];
+export const events: DiscordEvent[] = [readyEvent, messageCreateEvent];
 ```
 
 ## Configuration
