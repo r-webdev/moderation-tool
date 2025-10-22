@@ -1,8 +1,8 @@
 import { REST, Routes } from "discord.js";
-import { config } from "../env";
 import { commands } from "../commands/index";
+import { config } from "../env";
 
-const commandsData = Object.values(commands).map((command) => command.data.toJSON());
+const commandsData = Object.values(commands).map((command) => command.data);
 
 export async function registerCommands() {
   try {
