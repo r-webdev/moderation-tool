@@ -40,7 +40,7 @@ A TypeScript Discord bot built with Discord.js v14, designed for server moderati
    ```env
    DISCORD_TOKEN=your_bot_token_here
    CLIENT_ID=your_client_id_here
-   GUILD_ID=your_guild_id_here
+   SERVER_ID=your_guild_id_here
    ```
 
 4. **Build and run**
@@ -172,7 +172,7 @@ The bot uses a centralized configuration system in `src/env.ts`. Environment var
 
 - `DISCORD_TOKEN`: Your Discord bot token
 - `CLIENT_ID`: Your Discord application client ID
-- `GUILD_ID`: Guild ID for guild-specific command registration
+- `SERVER_ID`: Guild ID (Server ID) for guild-specific command registration
 
 ## Development
 

@@ -34,7 +34,7 @@ export async function registerCommands() {
   const commandsData = Array.from(commands.values()).map((command) => command.data);
 
   try {
-    const guildId = config.discord.guildId;
+    const guildId = config.discord.serverId;
     const scope = guildId ? `guild ${guildId}` : "global";
     console.log(`Started refreshing ${commandsData.length} ${scope} application commands.`);
 
