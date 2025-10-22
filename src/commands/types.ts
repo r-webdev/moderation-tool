@@ -1,13 +1,25 @@
 import type {
-  CommandInteraction,
-  ContextMenuCommandBuilder,
+  ChatInputCommandInteraction,
   MessageContextMenuCommandInteraction,
-  SlashCommandBuilder,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  RESTPostAPIContextMenuApplicationCommandsJSONBody,
+  UserContextMenuCommandInteraction,
 } from "discord.js";
 
-export type Command<
-  I extends CommandInteraction | MessageContextMenuCommandInteraction = CommandInteraction,
-> = {
-  data: SlashCommandBuilder | ContextMenuCommandBuilder;
-  execute: (interaction: I) => Promise<void> | void;
+export type UserContextMenuCommand = {
+  data: RESTPostAPIContextMenuApplicationCommandsJSONBody;
+  execute: (interaction: UserContextMenuCommandInteraction) => Promise<void> | void;
 };
+
+export type MessageContextMenuCommand = {
+  data: RESTPostAPIContextMenuApplicationCommandsJSONBody;
+  execute: (interaction: MessageContextMenuCommandInteraction) => Promise<void> | void;
+};
+
+export type SlashCommand = {
+  data: RESTPostAPIChatInputApplicationCommandsJSONBody;
+  execute: (interaction: ChatInputCommandInteraction) => Promise<void> | void;
+};
+
+export type ContextMenuCommand = UserContextMenuCommand | MessageContextMenuCommand;
+export type Command = SlashCommand | ContextMenuCommand;
