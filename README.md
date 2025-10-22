@@ -53,33 +53,6 @@ A TypeScript Discord bot built with Discord.js v14, designed for server moderati
    pnpm start:ci
    ```
 
-## Project Structure
-
-```
-src/
-├── commands/           # Command definitions
-│   ├── helpers.ts      # Command creation helpers
-│   ├── index.ts        # Command registry
-│   ├── ping/
-│   │   └── index.ts    # Ping slash command
-│   ├── report-message/
-│   │   └── index.ts    # Report message context menu command
-│   └── types.ts        # Command type definitions
-├── events/             # Event handlers
-│   ├── helpers.ts      # Event creation helpers
-│   ├── index.ts        # Event registry
-│   ├── interaction-create/
-│   │   └── index.ts    # Interaction handler
-│   ├── ready/
-│   │   └── index.ts    # Ready event handler
-│   └── types.ts        # Event type definitions
-├── utils/              # Utility functions
-│   ├── commands.ts     # Command loading/registering utilities
-│   └── events.ts       # Event loading utilities
-├── env.ts              # Environment configuration
-├── index.ts            # Main entry point
-└── loadEnvFile.ts      # Environment file loader
-```
 
 ## Creating Commands
 
