@@ -1,49 +1,13 @@
-import { ApplicationCommandType, type ChatInputCommandInteraction, type Client } from "discord.js";
-import type {
-  Command,
-  MessageContextMenuCommand,
-  SlashCommand,
-  UserContextMenuCommand,
-} from "../commands/types.js";
-
-export const createSlashCommand = (command: {
-  data: Omit<SlashCommand["data"], "type">;
-  execute: SlashCommand["execute"];
-}): SlashCommand => {
-  return {
-    data: {
-      ...command.data,
-      type: ApplicationCommandType.ChatInput,
-    },
-    execute: command.execute,
-  };
-};
-
-export const createUserContextMenuCommand = (command: {
-  data: Omit<UserContextMenuCommand["data"], "type">;
-  execute: UserContextMenuCommand["execute"];
-}): UserContextMenuCommand => {
-  return {
-    data: {
-      ...command.data,
-      type: ApplicationCommandType.User,
-    },
-    execute: command.execute,
-  };
-};
-
-export const createMessageContextMenuCommand = (command: {
-  data: Omit<MessageContextMenuCommand["data"], "type">;
-  execute: MessageContextMenuCommand["execute"];
-}): MessageContextMenuCommand => {
-  return {
-    data: {
-      ...command.data,
-      type: ApplicationCommandType.Message,
-    },
-    execute: command.execute,
-  };
-};
+import {
+  type ChatInputCommandInteraction,
+  type Client,
+  Collection,
+  REST,
+  Routes,
+} from "discord.js";
+import { commands } from "../commands/index.js";
+import type { Command } from "../commands/types.js";
+import { config } from "../env.js";
 
 export const buildCommandString = (interaction: ChatInputCommandInteraction): string => {
   const commandName = interaction.commandName;
@@ -51,3 +15,43 @@ export const buildCommandString = (interaction: ChatInputCommandInteraction): st
     .map((option) => `${option.name}:${option.value}`)
     .join(" ")}`;
 };
+
+export async function loadCommands(client: Client) {
+  if (!client.commands) {
+    client.commands = new Collection<string, Command>();
+  }
+
+  let loaded = 0;
+  for (const command of commands.values()) {
+    client.commands.set(command.data.name, command);
+    loaded += 1;
+  }
+
+  console.log(`Successfully loaded ${loaded} command handlers into client.commands.`);
+}
+
+export async function registerCommands() {
+  const commandsData = Array.from(commands.values()).map((command) => command.data);
+
+  try {
+    const guildId = config.discord.guildId;
+    const scope = guildId ? `guild ${guildId}` : "global";
+    console.log(`Started refreshing ${commandsData.length} ${scope} application commands.`);
+
+    const rest = new REST({ version: "10" }).setToken(config.discord.token);
+
+    if (guildId) {
+      await rest.put(Routes.applicationGuildCommands(config.discord.clientId, guildId), {
+        body: commandsData,
+      });
+    } else {
+      await rest.put(Routes.applicationCommands(config.discord.clientId), {
+        body: commandsData,
+      });
+    }
+
+    console.log(`Successfully reloaded ${commandsData.length} ${scope} commands.`);
+  } catch (error) {
+    console.error(JSON.stringify(error, null, 2));
+  }
+}
