@@ -2,8 +2,8 @@
 	"compilerOptions": {
 		"target": "ES2022",
 		"lib": ["ES2022"],
-		"module": "ESNext",
-		"moduleResolution": "node",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"strict": true,
@@ -12,10 +12,10 @@
 		"resolveJsonModule": true,
 		"declaration": false,
 		"outDir": "./dist",
-		"rootDir": "./",
+		"rootDir": "./src",
 		"noEmit": false,
 		"erasableSyntaxOnly": true
 	},
-	"include": ["*.ts", "src/**/*"],
+	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
 }
