@@ -1,5 +1,5 @@
 import type { Client } from "discord.js";
-import { events } from "../events";
+import { events } from "../events/index.js";
 
 export const loadEvents = (client: Client) => {
   for (const event of events) {

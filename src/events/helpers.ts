@@ -1,5 +1,5 @@
 import type { ClientEvents } from "discord.js";
-import type { DiscordEvent } from "./types";
+import type { DiscordEvent } from "./types.js";
 
 export const createEvent = <T extends keyof ClientEvents = keyof ClientEvents>(
   data: {
