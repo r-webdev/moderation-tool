@@ -1,78 +1,69 @@
-import type { MessageContextMenuCommandInteraction } from "discord.js";
-import {
-  ApplicationCommandType,
-  ChannelType,
-  ContextMenuCommandBuilder,
-  EmbedBuilder,
-} from "discord.js";
-import type { Command } from "./types.js";
+import { ChannelType, EmbedBuilder, MessageFlags } from "discord.js";
+import { createMessageContextMenuCommand } from "../utils/commands.js";
 
-const data = new ContextMenuCommandBuilder()
-  .setName("Report to Moderators")
-  .setType(ApplicationCommandType.Message); // ApplicationCommandType.Message = 3
-
-async function execute(interaction: MessageContextMenuCommandInteraction) {
-  const targetMessage = interaction.targetMessage;
-  const guild = interaction.guild;
-  const reporter = interaction.user;
-
-  if (!guild) {
-    await interaction.reply({
-      content: "This can only be used in a server.",
-      ephemeral: true,
+export const reportMessage = createMessageContextMenuCommand({
+  data: {
+    name: "Report to Moderators",
+  },
+  execute: async (interaction) => {
+    await interaction.deferReply({
+      flags: MessageFlags.Ephemeral,
     });
-    return;
-  }
 
-  try {
-    const channelId = "1430210468693282948";
-    const channel = await guild.channels.fetch(channelId);
-    if (!channel || channel.type !== ChannelType.GuildText) {
-      await interaction.reply({
-        content: "Moderator channel not found or is not a text channel.",
-        ephemeral: true,
+    const targetMessage = interaction.targetMessage;
+    const guild = interaction.guild;
+    const reporter = interaction.user;
+
+    if (!guild) {
+      await interaction.editReply({
+        content: "This can only be used in a server.",
       });
       return;
     }
 
-    const jumpLink = targetMessage.url;
-    const authorTag = targetMessage.author?.tag ?? "Unknown";
-    const authorId = targetMessage.author?.id ?? "Unknown";
+    try {
+      const channelId = "1430210468693282948";
+      const channel = guild.channels.cache.get(channelId);
 
-    const embed = new EmbedBuilder()
-      .setTitle("🚩 Message Report")
-      .setColor(0xff4d4f)
-      .setTimestamp()
-      .setURL(jumpLink)
-      .addFields(
-        { name: "Reporter", value: `<@${reporter.id}>`, inline: true },
-        {
-          name: "Message Link",
-          value: `[Jump to message](${jumpLink})`,
-          inline: true,
-        },
-        { name: "Message ID", value: targetMessage.id, inline: true },
-        { name: "Username", value: authorTag, inline: true },
-        { name: "User ID", value: authorId, inline: true },
-        { name: "Linked User", value: `<@${authorId}>`, inline: true }
-      );
+      if (!channel || channel.type !== ChannelType.GuildText) {
+        await interaction.editReply({
+          content: "Moderator channel not found or is not a text channel.",
+        });
+        return;
+      }
 
-    await channel.send({ embeds: [embed] });
+      const jumpLink = targetMessage.url;
+      const authorTag = targetMessage.author.tag ?? "Unknown";
+      const authorId = targetMessage.author.id ?? "Unknown";
 
-    await interaction.reply({
-      content: "Thanks. The message was reported to moderators.",
-      ephemeral: true,
-    });
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: "Failed to report the message.",
-      ephemeral: true,
-    });
-  }
-}
+      const embed = new EmbedBuilder()
+        .setTitle("🚩 Message Report")
+        .setColor(0xff4d4f)
+        .setTimestamp()
+        .setURL(jumpLink)
+        .addFields(
+          { name: "Reporter", value: `<@${reporter.id}>`, inline: true },
+          {
+            name: "Message Link",
+            value: `[Jump to message](${jumpLink})`,
+            inline: true,
+          },
+          { name: "Message ID", value: targetMessage.id, inline: true },
+          { name: "Username", value: authorTag, inline: true },
+          { name: "User ID", value: authorId, inline: true },
+          { name: "Linked User", value: `<@${authorId}>`, inline: true }
+        );
 
-export const reportMessage: Command<MessageContextMenuCommandInteraction> = {
-  data,
-  execute,
-};
+      await channel.send({ embeds: [embed] });
+
+      await interaction.editReply({
+        content: "Thanks. The message was reported to moderators.",
+      });
+    } catch (error) {
+      console.error(error);
+      await interaction.editReply({
+        content: "Failed to report the message.",
+      });
+    }
+  },
+});
