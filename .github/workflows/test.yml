@@ -16,7 +16,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -25,22 +25,17 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci --no-audit --no-fund
-          else
-            npm install --no-audit --no-fund
-          fi
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
 
       - name: Build
-        run: npm run build:ci
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        run: pnpm build:ci
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
