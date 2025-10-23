@@ -1,122 +1,116 @@
-name: Deploy
+name: Build, Test and Deploy Discord Bot to VPS
 
 on:
-  workflow_dispatch: # Manual trigger only
-  # Uncomment below when VPS is ready:
-  # push:
-  #   branches: [ "main" ]
-  #   paths-ignore:
-  #     - 'docs/**'
-  #     - '.gitignore'
-  #     - 'LICENSE'
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # Allow manual deployment
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  build-test-and-deploy:
+  test-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
 
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci --no-audit --no-fund
-          else
-            npm install --no-audit --no-fund
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Lint
+      run: pnpm lint
+
+    - name: Type check
+      run: pnpm typecheck
+
+    - name: Build
+      run: pnpm build:ci
+
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        timeout: 30m
+        script: |
+          set -euo pipefail
+
+          echo "🚀 Starting deployment..."
+
+          # Create project directory if it doesn't exist
+          PROJECT_DIR="/home/${{ secrets.VPS_USER }}/moderation-tool-bot"
+          if [ ! -d "$PROJECT_DIR" ]; then
+            echo "📁 Creating project directory..."
+            mkdir -p "$PROJECT_DIR"
           fi
 
-      - name: Lint
-        run: npm run lint
+          # Navigate to project directory
+          cd "$PROJECT_DIR"
 
-      - name: Build
-        run: npm run build:ci
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          # Check if this is a git repository
+          if [ ! -d ".git" ]; then
+            echo "📦 Cloning repository..."
+            # Clone the repository if not already cloned
+            git clone https://github.com/r-webdev/moderation-tool.git .
+            git checkout main
+          fi
 
-      - name: Run tests
-        run: npm test
+          echo "📦 Stashing any local changes..."
+          # Stash any local changes (ignore errors if no changes)
+          git stash push -m "Auto-deploy $(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
 
-      - name: Package artifact
-        run: |
-          tar -czf release.tar.gz dist package.json package-lock.json .nvmrc || tar -czf release.tar.gz dist package.json .nvmrc
+          echo "🔄 Pulling latest changes..."
+          # Pull latest changes
+          git checkout main
+          git pull origin main --no-edit
 
-      - name: Create .env file from secrets
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-        run: |
-          set -euo pipefail
-          printf "DISCORD_TOKEN=%s\n" "$DISCORD_TOKEN" > .env
-          printf "APPLICATION_ID=%s\n" "$APPLICATION_ID" >> .env
-          printf "NODE_ENV=production\n" >> .env
+          echo "⚙️ Setting up environment..."
+          # Read Node version from .nvmrc
+          NODE_VERSION=$(cat .nvmrc | sed 's/v//')
+          echo "Using Node version: $NODE_VERSION"
 
-      - name: Copy artifact to VPS
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST "mkdir -p ~/apps/webdev-bot/releases"
-          scp -i ~/.ssh/id_ed25519 -P ${SSH_PORT:-22} -o StrictHostKeyChecking=no release.tar.gz $SSH_USER@$SSH_HOST:~/apps/webdev-bot/releases/release.tar.gz
-
-      - name: Upload .env to VPS
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          APP_DIR: ${{ secrets.APP_DIR }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST "mkdir -p ${APP_DIR:-\"~/apps/webdev-bot\"}/shared && chmod 700 ${APP_DIR:-\"~/apps/webdev-bot\"}/shared"
-          scp -i ~/.ssh/id_ed25519 -P ${SSH_PORT:-22} -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST:${APP_DIR:-"~/apps/webdev-bot"}/shared/.env
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST "chmod 600 ${APP_DIR:-\"~/apps/webdev-bot\"}/shared/.env"
-
-      - name: Deploy on VPS
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          APP_DIR: ${{ secrets.APP_DIR }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p ${SSH_PORT:-22} $SSH_USER@$SSH_HOST << 'EOF'
-            set -euo pipefail
-            APP_DIR=${APP_DIR:-"~/apps/webdev-bot"}
-            mkdir -p "$APP_DIR/current" "$APP_DIR/releases" "$APP_DIR/shared"
-            cd "$APP_DIR"
-            rm -rf current/*
-            tar -xzf releases/release.tar.gz -C current
-            cd current
-            # Load env from shared/.env for the PM2 process
-            set -a
-            if [ -f "$APP_DIR/shared/.env" ]; then . "$APP_DIR/shared/.env"; fi
-            set +a
-            if [ -f package-lock.json ]; then
-              npm ci --omit=dev --no-audit --no-fund || true
-            else
-              npm install --omit=dev --no-audit --no-fund || true
-            fi
-            pm2 describe webdev-bot >/dev/null 2>&1 && pm2 restart webdev-bot || pm2 start "node dist/index.js" --name webdev-bot
-            pm2 save || true
+          # Create .env.local file with secrets
+          cat > .env.local << EOF
+          DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+          CLIENT_ID=${{ secrets.CLIENT_ID }}
+          SERVER_ID=${{ secrets.SERVER_ID }}
           EOF
+
+          echo "🐳 Stopping existing containers..."
+          # Stop any existing containers (ignore errors if none running)
+          docker compose down --remove-orphans || true
+
+          echo "🏗️ Building and starting production container..."
+          # Build and start production container
+          docker compose --profile prod up -d --build --force-recreate
+
+          echo "⏳ Waiting for container to be healthy..."
+          # Wait a bit for the container to start
+          sleep 10
+
+          echo "🔍 Checking deployment status..."
+          # Check container status
+          if docker compose ps | grep -q "Up"; then
+            echo "✅ Deployment successful! Container status:"
+            docker compose ps
+            echo "📊 Container logs (last 20 lines):"
+            docker compose logs --tail=20
+          else
+            echo "❌ Deployment failed! Container status:"
+            docker compose ps
+            echo "📊 Container logs:"
+            docker compose logs
+            exit 1
+          fi
+
+          echo "🎉 Deployment completed successfully!"
 
