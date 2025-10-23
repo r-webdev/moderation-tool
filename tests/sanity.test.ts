@@ -1,10 +1,10 @@
-import { test, describe, it } from "node:test";
 import assert from "node:assert";
-import fs from "fs";
-import path from "path";
-import { exec } from "child_process";
+import { exec } from "node:child_process";
+import { existsSync, readdirSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { describe, it } from "node:test";
 import { promisify } from "node:util";
-import { readFile } from "fs/promises";
 
 const execAsync = promisify(exec);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -20,10 +20,10 @@ describe("Bot Sanity Checks", () => {
 
   it("should have required files", () => {
     // Check that source files exist
-    assert.ok(fs.existsSync(path.join(__dirname, "..", "src", "index.ts")));
-    assert.ok(fs.existsSync(path.join(__dirname, "..", "src", "env.ts")));
-    assert.ok(fs.existsSync(path.join(__dirname, "..", "package.json")));
-    assert.ok(fs.existsSync(path.join(__dirname, "..", "tsconfig.json")));
+    assert.ok(existsSync(path.join(__dirname, "..", "src", "index.ts")));
+    assert.ok(existsSync(path.join(__dirname, "..", "src", "env.ts")));
+    assert.ok(existsSync(path.join(__dirname, "..", "package.json")));
+    assert.ok(existsSync(path.join(__dirname, "..", "tsconfig.json")));
   });
 
   it("should have valid TypeScript configuration", async () => {
@@ -39,7 +39,7 @@ describe("Bot Sanity Checks", () => {
     const distDir = path.join(__dirname, "..", "dist");
 
     // If dist doesn't exist, run build first
-    if (!fs.existsSync(distDir)) {
+    if (!existsSync(distDir)) {
       try {
         await execAsync("npm run build:ci", { cwd: path.join(__dirname, "..") });
       } catch (error) {
@@ -48,11 +48,11 @@ describe("Bot Sanity Checks", () => {
     }
 
     // Verify build artifacts exist
-    assert.ok(fs.existsSync(path.join(distDir, "index.js")), "dist/index.js should exist");
-    assert.ok(fs.existsSync(path.join(distDir, "env.js")), "dist/env.js should exist");
+    assert.ok(existsSync(path.join(distDir, "index.js")), "dist/index.js should exist");
+    assert.ok(existsSync(path.join(distDir, "env.js")), "dist/env.js should exist");
 
     // Check that dist directory has some content
-    const distFiles = fs.readdirSync(distDir);
+    const distFiles = readdirSync(distDir);
     assert.ok(distFiles.length > 0, "dist directory should contain built files");
   });
 });
