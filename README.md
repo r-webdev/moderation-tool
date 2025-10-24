@@ -241,16 +241,6 @@ The GitHub Actions workflow will automatically:
 - Deploy using Docker Compose with production profile
 - Verify deployment success and show container status
 
-### Required GitHub Secrets
-
-Set up these repository secrets in GitHub:
-- `VPS_HOST`: Your VPS IP address or hostname
-- `VPS_USER`: SSH username for your VPS
-- `VPS_SSH_KEY`: Private SSH key for authentication
-- `DISCORD_TOKEN`: Your Discord bot token
-- `CLIENT_ID`: Your Discord application client ID
-- `SERVER_ID`: Your Discord server (guild) ID
-
 ### Monitoring
 
 ```bash
