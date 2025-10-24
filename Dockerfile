@@ -1,5 +1,5 @@
 # Use build arg for Node.js version
-ARG NODE_VERSION=18
+ARG NODE_VERSION=22.20.0
 FROM node:${NODE_VERSION}-alpine AS base
 
 # Install pnpm
