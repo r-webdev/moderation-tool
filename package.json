@@ -5,10 +5,10 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"build:ci": "NODE_ENV=production tsc --outDir dist",
+		"build:ci": "rm -rf dist && NODE_ENV=production tsc --outDir dist",
 		"start:ci": "NODE_ENV=production node dist/index.js ",
 		"dev": "NODE_ENV=development tsx --watch src/index.ts",
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "tsx --test **/*.test.ts",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint --fix .",
 		"format": "biome format --write .",

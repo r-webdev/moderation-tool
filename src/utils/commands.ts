@@ -40,15 +40,9 @@ export async function registerCommands() {
 
     const rest = new REST({ version: "10" }).setToken(config.discord.token);
 
-    if (guildId) {
-      await rest.put(Routes.applicationGuildCommands(config.discord.clientId, guildId), {
-        body: commandsData,
-      });
-    } else {
-      await rest.put(Routes.applicationCommands(config.discord.clientId), {
-        body: commandsData,
-      });
-    }
+    await rest.put(Routes.applicationGuildCommands(config.discord.clientId, guildId), {
+      body: commandsData,
+    });
 
     console.log(`Successfully reloaded ${commandsData.length} ${scope} commands.`);
   } catch (error) {

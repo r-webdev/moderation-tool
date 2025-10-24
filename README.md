@@ -201,17 +201,61 @@ This project uses:
 
 ## Deployment
 
-1. Build the project:
-   ```bash
-   pnpm build:ci
-   ```
+This project includes automated deployment using GitHub Actions and Docker with direct SSH deployment to your VPS.
 
-2. Set environment variables in your deployment platform
+### Prerequisites
 
-3. Run the production build:
-   ```bash
-   pnpm start:ci
-   ```
+- A VPS with Docker and Docker Compose installed
+- SSH access to your VPS
+- GitHub repository with Actions enabled
+- Discord bot credentials
+
+### GitHub Actions Setup
+
+1. **Set up repository secrets**
+   - Go to Settings → Secrets and variables → Actions
+   - Add the following secrets:
+     - `VPS_HOST`: Your VPS IP address or hostname
+     - `VPS_USER`: SSH username for your VPS
+     - `VPS_SSH_KEY`: Private SSH key for authentication
+     - `DISCORD_TOKEN`: Your Discord bot token
+     - `CLIENT_ID`: Your Discord application client ID
+     - `SERVER_ID`: Your Discord server (guild) ID
+
+### VPS Setup
+
+The CI/CD pipeline handles all the setup automatically. The first deployment will:
+- Create the `moderation-tool-bot` directory on your VPS
+- Clone the repository and set up the environment
+- Subsequent deployments will simply pull the latest changes
+
+### Automated Deployment
+
+The GitHub Actions workflow will automatically:
+- Build and test on every push/PR to main branch
+- SSH directly to your VPS
+- Create project directory if it doesn't exist
+- Clone repository on first deployment
+- Pull latest code changes on subsequent deployments
+- Build Docker image on the VPS
+- Deploy using Docker Compose with production profile
+- Verify deployment success and show container status
+
+### Monitoring
+
+```bash
+# View logs
+docker compose logs -f
+
+# Check container status
+docker compose ps
+
+# Restart the bot
+docker compose restart moderation-tool-bot
+
+# Stop the bot
+docker compose down
+```
 
 ## Contributing
 
