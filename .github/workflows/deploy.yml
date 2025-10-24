@@ -100,15 +100,9 @@ jobs:
           echo "🔍 Checking deployment status..."
           # Check container status
           if docker compose ps | grep -q "Up"; then
-            echo "✅ Deployment successful! Container status:"
-            docker compose ps
-            echo "📊 Container logs (last 20 lines):"
-            docker compose logs --tail=20
+            echo "✅ Deployment successful!"
           else
-            echo "❌ Deployment failed! Container status:"
-            docker compose ps
-            echo "📊 Container logs:"
-            docker compose logs
+            echo "❌ Deployment failed!"
             exit 1
           fi
 
