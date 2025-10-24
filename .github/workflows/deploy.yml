@@ -67,9 +67,6 @@ jobs:
             git checkout main
           fi
 
-          echo "📦 Stashing any local changes..."
-          # Stash any local changes (ignore errors if no changes)
-          git stash push -m "Auto-deploy $(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
 
           echo "🔄 Pulling latest changes..."
           # Pull latest changes
