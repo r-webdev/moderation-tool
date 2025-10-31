@@ -52,7 +52,6 @@ ${messagesMd.channelsInvolved(new Set(options.messages.map((msg) => msg.channelI
 ${messagesMd.deletedAndMuted(options.deletedMessagesCount, options.muteDuration)}`;
 
   const textTextDisplayComponent = new TextDisplayBuilder().setContent(content);
-  console.log(content);
 
   const sectionComponent = new SectionBuilder()
     .addTextDisplayComponents(textTextDisplayComponent)
