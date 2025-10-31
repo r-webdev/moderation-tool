@@ -1,6 +1,6 @@
 import type { Channel, Message } from "discord.js";
 import { cachedMessages } from "../../cache/message-cache.js";
-import { HOUR } from "../../constants/time.js";
+import { HOUR, MINUTE } from "../../constants/time.js";
 import { defaultLogFunction, type LogFunction } from "./logs.js";
 
 type ActionConfig = {
@@ -100,6 +100,6 @@ export const handleCrossPostingAction = handleAction({
 
 export const handleHighFrequencyAction = handleAction({
   reason: "High Frequency Messaging",
-  deleteMessages: true,
-  muteDuration: 1 * HOUR,
+  deleteMessages: false,
+  muteDuration: 30 * MINUTE,
 });
