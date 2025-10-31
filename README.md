@@ -41,6 +41,8 @@ A TypeScript Discord bot built with Discord.js v14, designed for server moderati
    DISCORD_TOKEN=your_bot_token_here
    CLIENT_ID=your_client_id_here
    SERVER_ID=your_guild_id_here
+   SPAM_DETECTION_CHANNEL_ID=your_spam_detection_channel_id_here
+   ROLE_REGULAR_ID=your_regular_role_id_here
    ```
 
 4. **Build and run**

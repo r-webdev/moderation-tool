@@ -83,6 +83,8 @@ jobs:
           DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
           CLIENT_ID=${{ secrets.CLIENT_ID }}
           SERVER_ID=${{ secrets.SERVER_ID }}
+          SPAM_DETECTION_CHANNEL_ID=${{ secrets.SPAM_DETECTION_CHANNEL_ID }}
+          ROLE_REGULAR_ID=${{ secrets.ROLE_REGULAR_ID }}
           EOF
 
           echo "🐳 Stopping existing containers..."
