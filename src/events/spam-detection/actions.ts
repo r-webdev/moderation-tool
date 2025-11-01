@@ -27,7 +27,7 @@ const handleBulkDeleteMessages = async (messages: Message[]) => {
 
   await Promise.allSettled(
     Array.from(messagesByChannel.entries()).map(([channelId, messageIds]) => {
-      const channel = messages.find((msg) => msg.channelId === channelId)?.channel;
+      const channel = messages.find((message) => message.channelId === channelId)?.channel;
       if (!channel || channel.isDMBased()) {
         return Promise.resolve();
       }
