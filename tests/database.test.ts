@@ -415,12 +415,12 @@ describe("Database Operations", () => {
       const offenders = await findRepeatOffenders(3);
 
       // Should find the user with 4+ actions
-      const repeatOffender = offenders.find((o) => o.discordId === "repeat_offender");
+      const repeatOffender = offenders.find((offender) => offender.discordId === "repeat_offender");
       assert.ok(repeatOffender);
       assert.ok(repeatOffender.count >= 4);
 
       // Minor offender shouldn't be in the list
-      const minorOffender = offenders.find((o) => o.discordId === "minor_offender");
+      const minorOffender = offenders.find((offender) => offender.discordId === "minor_offender");
       assert.strictEqual(minorOffender, undefined);
     });
 
@@ -441,7 +441,8 @@ describe("Database Operations", () => {
 
       // Should have at least the 2 we just created
       const ourKicks = kickActions.filter(
-        (a) => a.target.discordId === "target015" || a.target.discordId === "target016"
+        (action) =>
+          action.target.discordId === "target015" || action.target.discordId === "target016"
       );
       assert.strictEqual(ourKicks.length, 2);
     });
@@ -477,7 +478,7 @@ describe("Database Operations", () => {
         SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_prisma%'
       `;
 
-      const tableNames = tables.map((t) => t.name);
+      const tableNames = tables.map((table) => table.name);
       assert.ok(tableNames.includes("User"));
       assert.ok(tableNames.includes("ModerationAction"));
     });
@@ -487,7 +488,7 @@ describe("Database Operations", () => {
         SELECT name FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_%'
       `;
 
-      const indexNames = indexes.map((i) => i.name);
+      const indexNames = indexes.map((index) => index.name);
       assert.ok(indexNames.some((name) => name.includes("discordId")));
       assert.ok(indexNames.some((name) => name.includes("targetId")));
       assert.ok(indexNames.some((name) => name.includes("moderatorId")));

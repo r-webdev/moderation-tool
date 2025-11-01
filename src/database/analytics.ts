@@ -107,7 +107,7 @@ export async function findRepeatOffenders(minActions = 3) {
 
   return Object.values(userActionCounts)
     .filter((item) => item.count >= minActions)
-    .sort((a, b) => b.count - a.count);
+    .sort((offenderA, offenderB) => offenderB.count - offenderA.count);
 }
 
 export async function getActionsByType(actionType: ActionType, limit = 50) {
