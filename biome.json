@@ -7,7 +7,8 @@
       "style": {
         "noNonNullAssertion": "off",
         "useConst": "error",
-        "useTemplate": "error"
+        "useTemplate": "error",
+        "useBlockStatements": "error"
       },
       "suspicious": {
         "noExplicitAny": "warn",
@@ -32,6 +33,6 @@
     }
   },
   "files": {
-    "includes": ["*.ts", "*.js", "src/**/*"]
+    "includes": ["*.ts", "*.js", "src/**/*", "tests/**/*"]
   }
 }
