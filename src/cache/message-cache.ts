@@ -305,7 +305,7 @@ export class MessageCache {
 
     return Array.from(messageIds)
       .map((id) => this.cache.get(id))
-      .filter((msg): msg is Message => msg !== undefined);
+      .filter((message): message is Message => message !== undefined);
   }
 
   // O(1) channel message lookup using secondary index
