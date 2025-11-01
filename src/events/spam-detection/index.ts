@@ -14,10 +14,11 @@ export const spamDetection = createEvent(
       return;
     }
     const regularRole = message.guild?.roles.cache.get(config.roles.regularId);
-    if (regularRole === undefined || message.member === null) {
-      return;
-    }
-    if (message.member.roles.highest.position >= regularRole.position) {
+    if (
+      regularRole === undefined ||
+      message.member === null ||
+      message.member.roles.highest.position >= regularRole.position
+    ) {
       return;
     }
 
