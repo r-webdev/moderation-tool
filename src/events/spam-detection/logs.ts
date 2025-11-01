@@ -9,7 +9,7 @@ import {
   type User,
 } from "discord.js";
 
-const messagesMd = {
+const logMessagesFormatters = {
   rule: (reason: string) => `**Rule Broken:** ${reason}`,
   user: (author: User) => `**User:** <@${author.id}>`,
   messagesInvolved: (messages: Message[], maxDisplay = 3) => {
@@ -45,11 +45,11 @@ export const defaultLogFunction: LogFunction = async (options) => {
     return;
   }
 
-  const content = `${messagesMd.rule(options.reason)}
-${messagesMd.user(options.messages[0].author)}
-${messagesMd.messagesInvolved(options.messages)}
-${messagesMd.channelsInvolved(new Set(options.messages.map((msg) => msg.channelId)))}
-${messagesMd.deletedAndMuted(options.deletedMessagesCount, options.muteDuration)}`;
+  const content = `${logMessagesFormatters.rule(options.reason)}
+${logMessagesFormatters.user(options.messages[0].author)}
+${logMessagesFormatters.messagesInvolved(options.messages)}
+${logMessagesFormatters.channelsInvolved(new Set(options.messages.map((msg) => msg.channelId)))}
+${logMessagesFormatters.deletedAndMuted(options.deletedMessagesCount, options.muteDuration)}`;
 
   const textTextDisplayComponent = new TextDisplayBuilder().setContent(content);
 
