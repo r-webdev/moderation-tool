@@ -48,7 +48,7 @@ export const defaultLogFunction: LogFunction = async (options) => {
   const content = `${logMessagesFormatters.rule(options.reason)}
 ${logMessagesFormatters.user(options.messages[0].author)}
 ${logMessagesFormatters.messagesInvolved(options.messages)}
-${logMessagesFormatters.channelsInvolved(new Set(options.messages.map((msg) => msg.channelId)))}
+${logMessagesFormatters.channelsInvolved(new Set(options.messages.map((message) => message.channelId)))}
 ${logMessagesFormatters.deletedAndMuted(options.deletedMessagesCount, options.muteDuration)}`;
 
   const textTextDisplayComponent = new TextDisplayBuilder().setContent(content);
