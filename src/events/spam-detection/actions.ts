@@ -12,14 +12,14 @@ type ActionConfig = {
 
 const handleBulkDeleteMessages = async (messages: Message[]) => {
   const messagesByChannel = new Map<string, string[]>();
-  for (const msg of messages) {
-    if (!msg.deletable || !msg.inGuild()) {
+  for (const message of messages) {
+    if (!message.deletable || !message.inGuild()) {
       continue;
     }
-    if (!messagesByChannel.has(msg.channelId)) {
-      messagesByChannel.set(msg.channelId, [msg.id]);
+    if (!messagesByChannel.has(message.channelId)) {
+      messagesByChannel.set(message.channelId, [message.id]);
     } else {
-      messagesByChannel.get(msg.channelId)!.push(msg.id);
+      messagesByChannel.get(message.channelId)!.push(message.id);
     }
   }
 
