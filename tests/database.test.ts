@@ -448,6 +448,10 @@ describe("Database Operations", () => {
     });
 
     it("should count total actions excluding errors", async () => {
+      // Get baseline count
+      const countBefore = await getTotalActionCount();
+
+      // Create 3 new actions
       const action1 = await createModerationAction({
         type: ActionType.WARN,
         targetDiscordId: "target017",
@@ -460,15 +464,23 @@ describe("Database Operations", () => {
         moderatorDiscordId: "mod017",
       });
 
+      await createModerationAction({
+        type: ActionType.KICK,
+        targetDiscordId: "target017",
+        moderatorDiscordId: "mod017",
+      });
+
+      // Count should have increased by 3
+      const countAfterCreate = await getTotalActionCount();
+      assert.strictEqual(countAfterCreate, countBefore + 3);
+
       // Mark one as error
       await removeActionByError(action1.id, "corrector003", "Error");
 
-      // Count should exclude the removed one
-      const total = await getTotalActionCount();
-
-      // Hard to test exact number since other tests create actions too
-      // Just verify it's a positive number
-      assert.ok(total > 0);
+      // Count should decrease by 1 (original action marked as REMOVED_BY_ERROR)
+      // Note: The correction record is created with REMOVED_BY_ERROR status, so it's never counted
+      const countAfterRemoval = await getTotalActionCount();
+      assert.strictEqual(countAfterRemoval, countBefore + 2);
     });
   });
 
