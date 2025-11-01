@@ -17,8 +17,8 @@ class MinHeap {
     return 2 * index + 2;
   }
 
-  private swap(i: number, j: number): void {
-    [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]];
+  private swap(index: number, otherIndex: number): void {
+    [this.heap[index], this.heap[otherIndex]] = [this.heap[otherIndex], this.heap[index]];
   }
 
   private heapifyUp(index: number): void {
