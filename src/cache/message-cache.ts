@@ -347,10 +347,10 @@ export class MessageCache {
     return Array.from(userMessageIds)
       .map((id) => this.cache.get(id))
       .filter(
-        (msg): msg is Message =>
-          msg !== undefined &&
-          msg.createdTimestamp >= startTime &&
-          (endTime === undefined || msg.createdTimestamp <= endTime)
+        (message): message is Message =>
+          message !== undefined &&
+          message.createdTimestamp >= startTime &&
+          (endTime === undefined || message.createdTimestamp <= endTime)
       );
   }
 
