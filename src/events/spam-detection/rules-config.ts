@@ -5,8 +5,15 @@ import {
   handleCrossPostingAction,
   handleDiscordInvitesAction,
   handleHighFrequencyAction,
+  handleSpoilerHackAction,
 } from "./actions.js";
-import { anyMessage, containsBannedTag, containsDiscordInvite, isCrossPost } from "./detectors.js";
+import {
+  anyMessage,
+  containsBannedTag,
+  containsDiscordInvite,
+  containsSpoilerHack,
+  isCrossPost,
+} from "./detectors.js";
 
 export type ContentBasedRule = {
   isBrokenBy: (newMessage: Message) => boolean;
@@ -42,6 +49,11 @@ export const rules: Rule[] = [
     type: "contentBased",
     isBrokenBy: containsDiscordInvite,
     action: handleDiscordInvitesAction,
+  },
+  {
+    type: "contentBased",
+    isBrokenBy: containsSpoilerHack,
+    action: handleSpoilerHackAction,
   },
   {
     type: "crossChannel",

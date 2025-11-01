@@ -92,6 +92,12 @@ export const handleDiscordInvitesAction = handleAction({
   muteDuration: 1 * HOUR,
 });
 
+export const handleSpoilerHackAction = handleAction({
+  reason: "Spoiler Tag Hack",
+  deleteMessages: true,
+  muteDuration: 30 * MINUTE,
+});
+
 export const handleCrossPostingAction = handleAction({
   reason: "Cross-posting",
   deleteMessages: true,
