@@ -1,6 +1,11 @@
 import { ActionStatus, type ActionType, PrismaClient } from "../../generated/prisma/index.js";
 
-export const prisma = new PrismaClient();
+export let prisma = new PrismaClient();
+
+// Allow tests to override the Prisma client
+export function setPrismaClient(client: PrismaClient) {
+  prisma = client;
+}
 
 // Connect to database and verify connection
 export async function connectDatabase() {
