@@ -8,7 +8,7 @@
 		"build:ci": "rm -rf dist && NODE_ENV=production tsc --outDir dist",
 		"start:ci": "NODE_ENV=production node dist/index.js ",
 		"dev": "NODE_ENV=development tsx --watch src/index.ts",
-		"test": "tsx --test **/*.test.ts",
+		"test": "tsx --test src/**/*.test.ts tests/*.test.ts",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint --fix .",
 		"format": "biome format --write .",
