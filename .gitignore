@@ -168,3 +168,4 @@ tmp/
 
 # esbuild metafile
 meta.json
+/generated/prisma
