@@ -63,8 +63,9 @@ export const messagesCacheCommand = createSlashCommand({
       case CommandOptions.STATS: {
         const stats = cachedMessages.getStats();
 
-        const createStatComponent = (label: string, value: number) =>
-          new TextDisplayBuilder().setContent(`**${label}:** ${value}`);
+        const createStatComponent = (label: string, value: number) => {
+          return new TextDisplayBuilder().setContent(`**${label}:** ${value}`);
+        };
 
         const sizeComponent = createStatComponent("Total Cached Messages", stats.size);
         const userCountComponent = createStatComponent("Unique Users in Cache", stats.userCount);
