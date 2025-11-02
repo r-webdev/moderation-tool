@@ -17,6 +17,12 @@ export const config = {
     clientId: requireEnv("CLIENT_ID"),
     serverId: requireEnv("SERVER_ID"),
   },
+  spamDetection: {
+    channelId: requireEnv("SPAM_DETECTION_CHANNEL_ID"),
+  },
+  roles: {
+    regularId: requireEnv("ROLE_REGULAR_ID"),
+  },
   // Add more config sections as needed:
   // database: {
   //   url: requireEnv('DATABASE_URL'),
