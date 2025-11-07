@@ -8,49 +8,100 @@ import {
   ThumbnailBuilder,
   type User,
 } from "discord.js";
+import { timeToString } from "../../utils/time.js";
+import type { Rule } from "./rules-config.js";
 
-const logMessagesFormatters = {
-  rule: (reason: string) => `**Rule Broken:** ${reason}`,
-  user: (author: User) => `**User:** <@${author.id}>`,
-  messagesInvolved: (messages: Message[], maxDisplay = 3) => {
-    const displayedMessages = messages.slice(0, maxDisplay);
-    const displayedCount = displayedMessages.length;
-    const remainingCount = messages.length - displayedMessages.length;
-    return (
-      `**Message${displayedCount > 1 ? "s" : ""} Involved:**\n` +
-      displayedMessages.map((msg) => `- "${msg.content}"`).join("\n") +
-      (remainingCount > 0 ? `  ...and ${remainingCount} more` : "")
-    );
-  },
-  channelsInvolved: (channels: Set<string>) => {
-    const channelMentions = Array.from(channels).map((id) => `<#${id}>`);
-    return `**Channel${channels.size > 1 ? "s" : ""} Involved:** ${channelMentions.join(", ")}`;
-  },
-  deletedAndMuted: (deletedCount: number, muteDuration?: number) => {
-    return `**Messages Deleted:** ${deletedCount}  **Mute Duration:** ${
-      muteDuration ? `${muteDuration / 1000} seconds` : "N/A"
-    }`;
-  },
+const makeLogMessageTitleAndContent = (title: string, content: string) => {
+  return `**${title}:** ${content}`;
 };
-export type LogFunction = (options: {
+
+const SPACER = `\n--------------------\n`;
+
+export type LogFunctionOptions<T = Rule> = {
   messages: Message[];
   reason: string;
   deletedMessagesCount: number;
   muteDuration?: number;
   logChannel?: Channel;
-}) => Promise<void>;
+  rule: T;
+};
+export type LogFunction<T = Rule> = (options: LogFunctionOptions<T>) => Promise<void>;
+
+export const createLogTextContent = <T extends Rule>(options: LogFunctionOptions<T>) => {
+  let contentString = "";
+
+  contentString += `**Rule Broken:** ${options.reason}\n`;
+  contentString += `**User:** <@${options.messages[0].author.id}>\n`;
+
+  switch (options.rule.type) {
+    case "contentBased": {
+      const flaggedMessage = options.messages[0];
+      contentString += makeLogMessageTitleAndContent(
+        "Flagged Message",
+        `\`\n\n${flaggedMessage.content}\`\n`
+      );
+      contentString += SPACER;
+      contentString += makeLogMessageTitleAndContent("Channel", `<#${flaggedMessage.channelId}>`);
+      break;
+    }
+    case "crossChannel": {
+      if (options.rule.isBrokenBy.name === "isCrossPost") {
+        contentString += `Posted in **${options.rule.channelCount}** channels within **${timeToString(options.rule.timeframe)} **\n`;
+        const flaggedMessage = options.messages[0];
+        const affectedChannels = new Set(options.messages.map((message) => message.channelId));
+        contentString += makeLogMessageTitleAndContent(
+          "Flagged Message",
+          `\n\n${flaggedMessage.content}\n`
+        );
+        contentString += SPACER;
+        contentString += makeLogMessageTitleAndContent(
+          "Channels Involved",
+          Array.from(affectedChannels)
+            .map((id) => `<#${id}>`)
+            .join(", ")
+        );
+      }
+      break;
+    }
+    case "frequencyBased": {
+      contentString += `Sent **${options.rule.frequency}** messages within **${timeToString(options.rule.timeframe)}**\n`;
+      const displayedMessages = options.messages.slice(0, 5);
+      const displayedCount = displayedMessages.length;
+      const remainingCount = options.messages.length - displayedCount;
+
+      contentString += `**Messages Involved:**\n`;
+      contentString += displayedMessages
+        .map((message) => {
+          const contentPreview =
+            message.content.length > 50 ? `${message.content.slice(0, 47)}...` : message.content;
+          return `- ${contentPreview}`;
+        })
+        .join("\n");
+      if (remainingCount > 0) {
+        contentString += `\n  ...and ${remainingCount} more\n`;
+      }
+      break;
+    }
+  }
+
+  contentString += SPACER;
+  contentString += "**Action(s) Taken:**\n";
+  if (options.deletedMessagesCount > 0) {
+    contentString += `- Deleted ${options.deletedMessagesCount} message${options.deletedMessagesCount > 1 ? "s" : ""}\n`;
+  }
+  if (options.muteDuration) {
+    contentString += `- Muted user for ${timeToString(options.muteDuration)}\n`;
+  }
+
+  return contentString;
+};
 
 export const defaultLogFunction: LogFunction = async (options) => {
   if (!options.logChannel?.isSendable()) {
     return;
   }
 
-  const content = `${logMessagesFormatters.rule(options.reason)}
-${logMessagesFormatters.user(options.messages[0].author)}
-${logMessagesFormatters.messagesInvolved(options.messages)}
-${logMessagesFormatters.channelsInvolved(new Set(options.messages.map((message) => message.channelId)))}
-${logMessagesFormatters.deletedAndMuted(options.deletedMessagesCount, options.muteDuration)}`;
-
+  const content = createLogTextContent(options);
   const textTextDisplayComponent = new TextDisplayBuilder().setContent(content);
 
   const sectionComponent = new SectionBuilder()
