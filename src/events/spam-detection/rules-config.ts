@@ -17,7 +17,7 @@ import {
 
 export type ContentBasedRule = {
   isBrokenBy: (newMessage: Message) => boolean;
-  action: (messages: Message[], logChannel?: Channel) => Promise<void>;
+  action: (messages: Message[], rule: Rule, logChannel?: Channel) => Promise<void>;
   type: "contentBased";
 };
 
@@ -25,7 +25,7 @@ export type CrossChannelRule = {
   isBrokenBy: (newMessage: Message, oldMessage: Message) => boolean;
   timeframe: number;
   channelCount: number;
-  action: (messages: Message[], logChannel?: Channel) => Promise<void>;
+  action: (messages: Message[], rule: Rule, logChannel?: Channel) => Promise<void>;
   type: "crossChannel";
 };
 
@@ -33,7 +33,7 @@ export type FrequencyBasedRule = {
   timeframe: number;
   frequency: number;
   isBrokenBy: (newMessage: Message, oldMessage: Message) => boolean;
-  action: (messages: Message[], logChannel?: Channel) => Promise<void>;
+  action: (messages: Message[], rule: Rule, logChannel?: Channel) => Promise<void>;
   type: "frequencyBased";
 };
 

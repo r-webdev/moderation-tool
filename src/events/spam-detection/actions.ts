@@ -2,6 +2,7 @@ import type { Channel, Message } from "discord.js";
 import { cachedMessages } from "../../cache/message-cache.js";
 import { HOUR, MINUTE } from "../../constants/time.js";
 import { defaultLogFunction, type LogFunction } from "./logs.js";
+import type { Rule } from "./rules-config.js";
 
 type ActionConfig = {
   reason: string;
@@ -41,7 +42,7 @@ const handleBulkDeleteMessages = async (messages: Message[]) => {
 };
 
 const handleAction = (config: ActionConfig) => {
-  return async (messages: Message[], logChannel?: Channel) => {
+  return async (messages: Message[], rule: Rule, logChannel?: Channel) => {
     const firstMessage = messages[0];
     const author = firstMessage.author;
 
@@ -76,12 +77,13 @@ const handleAction = (config: ActionConfig) => {
       logChannel,
       deletedMessagesCount,
       muteDuration: muted ? config.muteDuration : undefined,
+      rule,
     });
   };
 };
 
 export const handleBannedTagsAction = handleAction({
-  reason: "Banned Tag Detected",
+  reason: "Banned Tag",
   deleteMessages: true,
   muteDuration: 1 * HOUR,
 });
@@ -106,6 +108,6 @@ export const handleCrossPostingAction = handleAction({
 
 export const handleHighFrequencyAction = handleAction({
   reason: "High Frequency Messaging",
-  deleteMessages: false,
+  deleteMessages: true,
   muteDuration: 30 * MINUTE,
 });
