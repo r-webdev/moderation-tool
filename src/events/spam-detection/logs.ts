@@ -30,8 +30,8 @@ export type LogFunction<T = Rule> = (options: LogFunctionOptions<T>) => Promise<
 export const createLogTextContent = <T extends Rule>(options: LogFunctionOptions<T>) => {
   let contentString = "";
 
-  contentString += `**Rule Broken:** ${options.reason}\n`;
-  contentString += `**User:** <@${options.messages[0].author.id}>\n`;
+  contentString += makeLogMessageTitleAndContent("Rule Broken", `${options.reason}\n`);
+  contentString += makeLogMessageTitleAndContent("User", `<@${options.messages[0].author.id}>\n`);
 
   switch (options.rule.type) {
     case "contentBased": {
