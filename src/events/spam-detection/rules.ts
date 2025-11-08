@@ -26,7 +26,7 @@ export async function checkRules(newMessage: Message): Promise<void> {
 
     if (result.broken) {
       const logChannel = newMessage.client.channels.cache.get(config.spamDetection.channelId);
-      await rule.action(result.messages, logChannel);
+      await rule.action(result.messages, rule, logChannel);
       return;
     }
   }
