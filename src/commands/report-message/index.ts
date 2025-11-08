@@ -1,4 +1,5 @@
 import { ChannelType, EmbedBuilder, MessageFlags } from "discord.js";
+import { COLORS } from "../../constants/colors.js";
 import { createMessageContextMenuCommand } from "../helpers.js";
 
 export const reportMessage = createMessageContextMenuCommand({
@@ -38,7 +39,7 @@ export const reportMessage = createMessageContextMenuCommand({
 
       const embed = new EmbedBuilder()
         .setTitle("🚩 Message Report")
-        .setColor(0xff4d4f)
+        .setColor(COLORS.ORANGE)
         .setTimestamp()
         .setURL(jumpLink)
         .addFields(

@@ -8,6 +8,7 @@ import {
   TextDisplayBuilder,
 } from "discord.js";
 import { cachedMessages } from "../../cache/message-cache.js";
+import { COLORS } from "../../constants/colors.js";
 import { createSlashCommand } from "../helpers.js";
 
 const CommandOptions = {
@@ -75,7 +76,7 @@ export const messagesCacheCommand = createSlashCommand({
         );
 
         const containerComponent = new ContainerBuilder()
-          .setAccentColor(0x00ff00)
+          .setAccentColor(COLORS.GREEN)
           .addTextDisplayComponents(sizeComponent)
           .addTextDisplayComponents(userCountComponent)
           .addTextDisplayComponents(channelCountComponent);

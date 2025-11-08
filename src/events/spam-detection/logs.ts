@@ -6,8 +6,8 @@ import {
   SectionBuilder,
   TextDisplayBuilder,
   ThumbnailBuilder,
-  type User,
 } from "discord.js";
+import { COLORS } from "../../constants/colors.js";
 import { timeToString } from "../../utils/time.js";
 import type { Rule } from "./rules-config.js";
 
@@ -112,7 +112,7 @@ export const defaultLogFunction: LogFunction = async (options) => {
 
   const containerComponent = new ContainerBuilder()
     .addSectionComponents(sectionComponent)
-    .setAccentColor(0xff0000);
+    .setAccentColor(COLORS.RED);
 
   await options.logChannel.send({
     flags: MessageFlags.IsComponentsV2,
