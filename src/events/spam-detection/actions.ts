@@ -1,6 +1,6 @@
 import type { Channel, Message } from "discord.js";
 import { cachedMessages } from "../../cache/message-cache.js";
-import { HOUR, MINUTE } from "../../constants/time.js";
+import { DAY, HOUR } from "../../constants/time.js";
 import { defaultLogFunction, type LogFunction } from "./logs.js";
 import type { Rule } from "./rules-config.js";
 
@@ -85,29 +85,29 @@ const handleAction = (config: ActionConfig) => {
 export const handleBannedTagsAction = handleAction({
   reason: "Banned Tag",
   deleteMessages: true,
-  muteDuration: 1 * HOUR,
+  muteDuration: 1 * DAY,
 });
 
 export const handleDiscordInvitesAction = handleAction({
   reason: "Discord Invite Link",
   deleteMessages: true,
-  muteDuration: 1 * HOUR,
+  muteDuration: 1 * DAY,
 });
 
 export const handleSpoilerHackAction = handleAction({
   reason: "Spoiler Tag Hack",
   deleteMessages: true,
-  muteDuration: 30 * MINUTE,
+  muteDuration: 12 * HOUR,
 });
 
 export const handleCrossPostingAction = handleAction({
   reason: "Cross-posting",
   deleteMessages: true,
-  muteDuration: 1 * HOUR,
+  muteDuration: 12 * HOUR,
 });
 
 export const handleHighFrequencyAction = handleAction({
   reason: "High Frequency Messaging",
   deleteMessages: true,
-  muteDuration: 30 * MINUTE,
+  muteDuration: 12 * HOUR,
 });
