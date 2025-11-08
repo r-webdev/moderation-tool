@@ -1,5 +1,6 @@
 import {
   ApplicationCommandOptionType,
+  Colors,
   ContainerBuilder,
   GuildMember,
   MessageFlags,
@@ -75,7 +76,7 @@ export const messagesCacheCommand = createSlashCommand({
         );
 
         const containerComponent = new ContainerBuilder()
-          .setAccentColor(0x00ff00)
+          .setAccentColor(Colors.Blue)
           .addTextDisplayComponents(sizeComponent)
           .addTextDisplayComponents(userCountComponent)
           .addTextDisplayComponents(channelCountComponent);
