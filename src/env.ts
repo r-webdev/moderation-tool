@@ -17,10 +17,10 @@ export const config = {
     clientId: requireEnv("CLIENT_ID"),
     serverId: requireEnv("SERVER_ID"),
   },
+  database: {
+    url: requireEnv("DATABASE_URL"),
+  },
   // Add more config sections as needed:
-  // database: {
-  //   url: requireEnv('DATABASE_URL'),
-  // },
   // api: {
   //   openaiKey: optionalEnv('OPENAI_API_KEY'),
   // },
@@ -33,3 +33,4 @@ console.log("✅ Configuration loaded successfully");
 console.log(`📋 Client ID: ${config.discord.clientId ? config.discord.clientId : "❌ missing"}`);
 console.log(`🔑 Token: ${config.discord.token ? "***configured***" : "❌ missing"}`);
 console.log(`🔑 Guild ID: ${config.discord.serverId ? config.discord.serverId : "Global"}`);
+console.log(`🗄️ Database: ${config.database.url ? "***configured***" : "❌ missing"}`);

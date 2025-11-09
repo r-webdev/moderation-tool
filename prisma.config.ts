@@ -1,4 +1,5 @@
 import { defineConfig } from "prisma/config";
+import "./src/loadEnvFile.js";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -7,6 +8,6 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
-    url: "file:../data/moderation.db", // Match schema.prisma
+    url: process.env.DATABASE_URL!,
   },
 });

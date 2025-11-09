@@ -83,6 +83,7 @@ jobs:
           DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
           CLIENT_ID=${{ secrets.CLIENT_ID }}
           SERVER_ID=${{ secrets.SERVER_ID }}
+          DATABASE_URL=file:../data/moderation.db
           EOF
 
           echo "🐳 Stopping existing containers..."

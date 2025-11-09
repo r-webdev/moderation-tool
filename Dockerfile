@@ -45,7 +45,6 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/generated ./generated
 COPY --from=build /app/prisma ./prisma
 COPY package.json ./
-COPY prisma.config.ts ./
 
 # Create data directory and set permissions for node user
 RUN mkdir -p /app/data && chown -R node:node /app/data
@@ -53,7 +52,7 @@ RUN mkdir -p /app/data && chown -R node:node /app/data
 # Run as non-root user for security
 USER node
 
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
 
 # Development stage - Full dev environment with hot reload
 FROM deps-dev AS development
@@ -71,4 +70,4 @@ RUN mkdir -p /app/data && chown -R node:node /app/data
 # Run as non-root user for security
 USER node
 
-CMD ["pnpm", "run", "dev"]
+CMD ["sh", "-c", "npx prisma migrate deploy && pnpm run dev"]

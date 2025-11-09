@@ -2,13 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js" 
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../data/moderation.db"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -54,13 +54,13 @@ enum ActionReason {
 }
 
 model User {
-  userId        Int      @id @default(autoincrement())
-  discordUserId String   @unique
-  role          Role     @default(MEMBER)
+  userId        Int    @id @default(autoincrement())
+  discordUserId String @unique
+  role          Role   @default(MEMBER)
 
   // A user can have many actions performed on them
-  actions       Action[] @relation("UserActions")
-  
+  actions Action[] @relation("UserActions")
+
   // A user (as moderator) can perform many moderation actions
   moderatedActions Action[] @relation("ModeratorActions")
 }
@@ -78,14 +78,14 @@ model Action {
   revertingActionId Int?         @unique
 
   // Relationship to the user this action was performed on
-  user              User         @relation("UserActions", fields: [userId], references: [userId])
-  
+  user User @relation("UserActions", fields: [userId], references: [userId])
+
   // Relationship to the moderator who performed this action
-  moderator         User         @relation("ModeratorActions", fields: [moderatorUserId], references: [userId])
-  
+  moderator User @relation("ModeratorActions", fields: [moderatorUserId], references: [userId])
+
   // Self-referential relationship: this action reverts another action
-  revertingAction   Action?      @relation("ActionCorrections", fields: [revertingActionId], references: [actionId])
-  
+  revertingAction Action? @relation("ActionCorrections", fields: [revertingActionId], references: [actionId])
+
   // Self-referential relationship: actions that revert this action
-  revertedByActions Action[]     @relation("ActionCorrections")
+  revertedByActions Action[] @relation("ActionCorrections")
 }

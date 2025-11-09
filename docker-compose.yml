@@ -13,6 +13,7 @@ services:
       - .env.local
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=file:../data/moderation.db
     volumes:
       - prod_logs:/app/logs
       - prod_data:/app/data  # Named volume - persists outside repo
@@ -29,6 +30,7 @@ services:
       - .env.local
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=file:../data/moderation.db
     volumes:
       - .:/app
       - ./logs:/app/logs
@@ -46,6 +48,8 @@ services:
     profiles: ["tools"]
     env_file:
       - .env.local
+    environment:
+      - DATABASE_URL=file:../data/moderation.db
     volumes:
       - prod_data:/app/data  # Use same named volume as production
     command: npx prisma migrate deploy

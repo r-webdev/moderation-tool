@@ -16,7 +16,13 @@
 		"check:fix": "biome check --write .",
 		"prepare": "husky",
 		"pre-commit": "lint-staged",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+
+		"db:migrate": "npx prisma migrate deploy",
+		"db:migrate:dev": "npx prisma migrate dev",
+		"db:generate": "npx prisma generate",
+		"db:studio": "npx prisma studio",
+		"db:reset": "npx prisma migrate reset"
 	},
 	"license": "MIT",
 	"packageManager": "pnpm@10.17.1",
