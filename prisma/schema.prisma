@@ -44,11 +44,48 @@ enum ActionStatus {
 enum ActionReason {
   SPAM
   SCAM
-  DISRUPTION
+  DISRESPCTING
   NSFW
   HATE_SPEECH
   SELF_PROMOTION
   JOB_POSTING
   FOR_HIRE
   OTHER
+}
+
+model User {
+  userId        Int      @id @default(autoincrement())
+  discordUserId String   @unique
+  role          Role     @default(MEMBER)
+
+  // A user can have many actions performed on them
+  actions       Action[] @relation("UserActions")
+  
+  // A user (as moderator) can perform many moderation actions
+  moderatedActions Action[] @relation("ModeratorActions")
+}
+
+model Action {
+  actionId          Int          @id @default(autoincrement())
+  userId            Int
+  type              ActionType
+  status            ActionStatus @default(ACTIVE)
+  moderatorUserId   Int
+  reason            String
+  note              String?
+  createdAt         Int
+  expiresAt         Int?
+  revertingActionId Int?         @unique
+
+  // Relationship to the user this action was performed on
+  user              User         @relation("UserActions", fields: [userId], references: [userId])
+  
+  // Relationship to the moderator who performed this action
+  moderator         User         @relation("ModeratorActions", fields: [moderatorUserId], references: [userId])
+  
+  // Self-referential relationship: this action reverts another action
+  revertingAction   Action?      @relation("ActionCorrections", fields: [revertingActionId], references: [actionId])
+  
+  // Self-referential relationship: actions that revert this action
+  revertedByActions Action[]     @relation("ActionCorrections")
 }
