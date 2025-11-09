@@ -44,7 +44,7 @@ enum ActionStatus {
 enum ActionReason {
   SPAM
   SCAM
-  DISRESPCTING
+  DISRESPECTFUL
   NSFW
   HATE_SPEECH
   SELF_PROMOTION
