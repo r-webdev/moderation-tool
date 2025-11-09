@@ -7,6 +7,6 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
-    url: "file:./dev.db",
+    url: "file:../data/moderation.db", // Match schema.prisma
   },
 });
