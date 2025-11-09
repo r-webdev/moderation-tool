@@ -71,7 +71,7 @@ model Action {
   type              ActionType
   status            ActionStatus @default(ACTIVE)
   moderatorUserId   Int
-  reason            String
+  reason            ActionReason
   note              String?
   createdAt         Int
   expiresAt         Int?
