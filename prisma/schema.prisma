@@ -11,60 +11,44 @@ datasource db {
   url      = "file:../data/moderation.db"
 }
 
-model User {
-  id               Int                  @id @default(autoincrement())
-  discordId        String               @unique
-  
-  // Relations
-  actionsReceived  ModerationAction[]   @relation("ActionTarget")
-  actionsPerformed ModerationAction[]   @relation("ActionModerator")
-  
-  @@index([discordId])
+enum Role {
+  MEMBER
+  ASSISTANT
+  MOD_I
+  MOD_II
+  MOD_III
+  MANAGER
+  ADMIN
 }
 
 enum ActionType {
-  WARN
-  MUTE
-  UNMUTE
-  KICK
-  BAN
-  UNBAN
-  TIMEOUT
-  REMOVE_TIMEOUT
   REPEL
+  TIMEOUT
+  MUTE
+  TEMP_MUTE
+  WARN
+  KICK
+
+  BAN
+  TEMP_BAN
+
+  REVERT
 }
 
 enum ActionStatus {
   ACTIVE
-  EXPIRED
-  REMOVED_BY_ERROR
-  REVERSED
+  STALE
+  REVERTED
 }
 
-model ModerationAction {
-  id             Int                  @id @default(autoincrement())
-  type           ActionType
-  status         ActionStatus         @default(ACTIVE)
-  reason         String?
-  duration       Int?                 // Duration in seconds for timeouts/mutes
-  
-  // User relationships
-  targetId       Int
-  target         User                 @relation("ActionTarget", fields: [targetId], references: [id])
-  moderatorId    Int
-  moderator      User                 @relation("ActionModerator", fields: [moderatorId], references: [id])
-  
-  // Timestamps
-  createdAt      DateTime             @default(now())
-  expiresAt      DateTime?
-  
-  // For corrections/reversals
-  parentActionId Int?
-  parentAction   ModerationAction?    @relation("ActionCorrections", fields: [parentActionId], references: [id])
-  corrections    ModerationAction[]   @relation("ActionCorrections")
-  
-  @@index([targetId])
-  @@index([moderatorId])
-  @@index([status])
-  @@index([createdAt])
+enum ActionReason {
+  SPAM
+  SCAM
+  DISRUPTION
+  NSFW
+  HATE_SPEECH
+  SELF_PROMOTION
+  JOB_POSTING
+  FOR_HIRE
+  OTHER
 }
