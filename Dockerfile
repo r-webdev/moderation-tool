@@ -27,6 +27,9 @@ FROM deps-dev AS build
 
 COPY . .
 
+# Generate Prisma client
+RUN npx prisma generate
+
 RUN pnpm run build:ci
 
 # Production stage - Minimal runtime image
@@ -39,7 +42,10 @@ COPY --from=deps /app/node_modules ./node_modules
 
 # Copy built application
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/generated ./generated
+COPY --from=build /app/prisma ./prisma
 COPY package.json ./
+COPY prisma.config.ts ./
 
 # Create data directory and set permissions for node user
 RUN mkdir -p /app/data && chown -R node:node /app/data
@@ -55,6 +61,9 @@ FROM deps-dev AS development
 ENV NODE_ENV=development
 
 COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Create data directory and set permissions for node user
 RUN mkdir -p /app/data && chown -R node:node /app/data
