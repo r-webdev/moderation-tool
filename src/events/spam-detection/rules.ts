@@ -13,8 +13,9 @@ type CheckRuleOptions = {
 };
 
 export async function checkRules(newMessage: Message): Promise<void> {
-  const startTime = Date.now() - MAX_RULE_TIMEFRAME * 1.5; // Slightly extend timeframe to ensure we catch all relevant messages;
-  const userMessages = cachedMessages.getMessagesInTimeRange(newMessage.author.id, startTime);
+  const startTime = Date.now();
+  const maxLookback = startTime - MAX_RULE_TIMEFRAME * 1.5;
+  const userMessages = cachedMessages.getMessagesInTimeRange(newMessage.author.id, maxLookback);
 
   for (const rule of rules) {
     const result = checkRule({
