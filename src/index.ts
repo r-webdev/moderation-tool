@@ -16,4 +16,15 @@ loadCommands(client);
 loadEvents(client);
 registerCommands();
 
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("Shutting down...");
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("Shutting down...");
+  process.exit(0);
+});
+
 client.login(config.discord.token);

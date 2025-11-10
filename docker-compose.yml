@@ -14,8 +14,8 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - ./logs:/app/logs
-      - ./data:/app/data
+      - prod_logs:/app/logs
+      - prod_data:/app/data  # Named volume - persists outside repo
 
   discord-bot-dev:
     build:
@@ -35,3 +35,24 @@ services:
       - ./data:/app/data
     ports:
       - "9229:9229"  # For debugging
+
+  # Run database migrations manually when ready
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: moderation-tool-migrate
+    profiles: ["tools"]
+    env_file:
+      - .env.local
+    volumes:
+      - prod_data:/app/data  # Use same named volume as production
+    command: npx prisma migrate deploy
+
+# Named volumes - persist outside the repo directory
+volumes:
+  prod_data:
+    name: discord-moderation-data
+  prod_logs:
+    name: discord-moderation-logs

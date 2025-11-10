@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js" 
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/moderation.db"
+}
+
+enum Role {
+  MEMBER
+  ASSISTANT
+  MOD_I
+  MOD_II
+  MOD_III
+  MANAGER
+  ADMIN
+}
+
+enum ActionType {
+  REPEL
+  TIMEOUT
+  MUTE
+  TEMP_MUTE
+  WARN
+  KICK
+
+  BAN
+  TEMP_BAN
+
+  REVERT
+}
+
+enum ActionStatus {
+  ACTIVE
+  STALE
+  REVERTED
+}
+
+enum ActionReason {
+  SPAM
+  SCAM
+  DISRESPECTFUL
+  NSFW
+  HATE_SPEECH
+  SELF_PROMOTION
+  JOB_POSTING
+  FOR_HIRE
+  OTHER
+}
+
+model User {
+  userId        Int      @id @default(autoincrement())
+  discordUserId String   @unique
+  role          Role     @default(MEMBER)
+
+  // A user can have many actions performed on them
+  actions       Action[] @relation("UserActions")
+  
+  // A user (as moderator) can perform many moderation actions
+  moderatedActions Action[] @relation("ModeratorActions")
+}
+
+model Action {
+  actionId          Int          @id @default(autoincrement())
+  userId            Int
+  type              ActionType
+  status            ActionStatus @default(ACTIVE)
+  moderatorUserId   Int
+  reason            ActionReason
+  note              String?
+  createdAt         Int
+  expiresAt         Int?
+  revertingActionId Int?         @unique
+
+  // Relationship to the user this action was performed on
+  user              User         @relation("UserActions", fields: [userId], references: [userId])
+  
+  // Relationship to the moderator who performed this action
+  moderator         User         @relation("ModeratorActions", fields: [moderatorUserId], references: [userId])
+  
+  // Self-referential relationship: this action reverts another action
+  revertingAction   Action?      @relation("ActionCorrections", fields: [revertingActionId], references: [actionId])
+  
+  // Self-referential relationship: actions that revert this action
+  revertedByActions Action[]     @relation("ActionCorrections")
+}
