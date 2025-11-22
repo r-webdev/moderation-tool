@@ -16,7 +16,7 @@ WORKDIR /app
 # Dependencies stage - Install production dependencies only
 FROM base AS deps
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile --production
 
