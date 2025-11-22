@@ -6,21 +6,26 @@ FROM node:${NODE_VERSION}-alpine AS base
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 
+# Disable interactive prompts for pnpm in CI/Docker
+ENV CI=true
+ENV npm_config_build_from_source=false
+ENV PNP_BUILD_FROM_SOURCE=false
+
 WORKDIR /app
 
 # Dependencies stage - Install production dependencies only
 FROM base AS deps
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile --production --ignore-scripts
+RUN pnpm install --frozen-lockfile --production
 
 # Dev dependencies stage - Install all dependencies
 FROM base AS deps-dev
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile --ignore-scripts
+RUN pnpm install --frozen-lockfile
 
 # Build stage - Compile TypeScript
 FROM deps-dev AS build
