@@ -58,7 +58,7 @@ export const createAction = async (params: {
     create: { discordUserId: moderatorUserId },
   });
 
-  // Create the action
+  // Create the action with user and moderator relationships
   const action = await db.action.create({
     data: {
       userId: targetUser.userId,
@@ -68,6 +68,10 @@ export const createAction = async (params: {
       note: note ?? null,
       createdAt: Math.floor(Date.now() / 1000), // Current timestamp in seconds
       expiresAt: expiresAt ?? null,
+    },
+    include: {
+      user: true,
+      moderator: true,
     },
   });
 

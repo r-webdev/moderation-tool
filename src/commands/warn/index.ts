@@ -1,5 +1,7 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ActionReason, ActionType } from "../../../generated/prisma/index.js";
+import { config } from "../../env.js";
+import { createActionDetails, createActionNotification } from "../../utils/action-embeds.js";
 import { createAction, getDefaultExpiration } from "../../utils/actions.js";
 import { createSlashCommand } from "../helpers.js";
 
@@ -82,16 +84,44 @@ export const warn = createSlashCommand({
         expiresAt,
       });
 
-      // Format expiration date for display
-      const expirationDate = new Date(expiresAt * 1000).toLocaleDateString();
-
-      await interaction.editReply({
-        content: `✅ Warning issued to ${targetUser.tag}\n**Reason:** ${reasonText}\n**Note:** ${finalNote}\n**Expires:** ${expirationDate}\n**Action ID:** ${action.actionId}`,
+      const notificationEmbed = createActionNotification({
+        user: targetUser,
+        actionType: ActionType.WARN,
+        reason,
       });
+
+      // Send notification embed as confirmation
+      try {
+        await interaction.followUp({
+          embeds: [notificationEmbed],
+        });
+      } catch (error) {
+        console.error("Error sending notification embed:", error);
+        await interaction.followUp({
+          content: "❌ An error occurred while sending the notification. Please try again later.",
+          ephemeral: true,
+        });
+      }
+
+      // Send verbose embed to action log channel
+      try {
+        const logChannel = await interaction.client.channels.fetch(config.channels.actionLogId);
+        if (logChannel && logChannel.type === ChannelType.GuildText) {
+          const detailsEmbed = createActionDetails(action, targetUser);
+          await logChannel.send({ embeds: [detailsEmbed] });
+        }
+      } catch (logError) {
+        console.error("Error sending to action log channel:", logError);
+        await interaction.followUp({
+          content: "❌ An error occurred while sending the action log. Please try again later.",
+          ephemeral: true,
+        });
+      }
     } catch (error) {
       console.error("Error creating warning action:", error);
-      await interaction.editReply({
+      await interaction.followUp({
         content: "❌ An error occurred while issuing the warning. Please try again later.",
+        ephemeral: true,
       });
     }
   },
