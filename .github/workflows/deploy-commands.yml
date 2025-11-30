@@ -30,7 +30,7 @@ jobs:
           echo "Using Node version: $NODE_VERSION"
 
           # Run deploy script inside the already running Docker container
-          # .env file should already exist from main deployment
+          # .env.local file should already exist from main deployment
           echo "Deploying Discord commands..."
           docker compose --profile prod exec discord-bot node dist/utils/deploy-commands.js
 
