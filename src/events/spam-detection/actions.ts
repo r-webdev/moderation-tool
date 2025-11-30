@@ -50,12 +50,6 @@ const handleAction = (config: ActionConfig) => {
       return;
     }
 
-    let deletedMessagesCount = 0;
-
-    if (config.deleteMessages) {
-      deletedMessagesCount = await handleBulkDeleteMessages(messages);
-    }
-
     let muted = false;
     if (config.muteDuration) {
       try {
@@ -67,6 +61,12 @@ const handleAction = (config: ActionConfig) => {
       } catch (error) {
         console.error("Failed to mute user:", error);
       }
+    }
+
+    let deletedMessagesCount = 0;
+
+    if (config.deleteMessages) {
+      deletedMessagesCount = await handleBulkDeleteMessages(messages);
     }
 
     // Use custom log function if provided, otherwise use default
