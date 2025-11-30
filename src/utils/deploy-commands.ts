@@ -7,9 +7,6 @@ export async function deployCommands(): Promise<void> {
 
   const rest = new REST({ version: "10" }).setToken(config.discord.token);
 
-  (await rest.put(Routes.applicationCommands(config.discord.clientId), {
-    body: [],
-  })) as RESTPutAPIApplicationCommandsResult;
   try {
     const result = (await rest.put(
       Routes.applicationGuildCommands(config.discord.clientId, config.discord.serverId),
