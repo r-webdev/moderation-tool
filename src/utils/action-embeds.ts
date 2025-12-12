@@ -1,98 +1,17 @@
 import { EmbedBuilder, type User } from "discord.js";
 import type { Action, User as PrismaUser } from "../../generated/prisma/index.js";
-import { type ActionReason, ActionStatus, ActionType } from "../../generated/prisma/index.js";
+import { type ActionReason, ActionStatus, type ActionType } from "../../generated/prisma/index.js";
+import {
+  formatReason,
+  getActionColor,
+  getActionEmoji,
+  getActionTypeName,
+} from "./action-helpers.js";
 
 type ActionWithRelations = Action & {
   user: PrismaUser;
   moderator: PrismaUser;
 };
-
-/**
- * Get the color for an action based on its severity
- */
-function getActionColor(actionType: ActionType): number {
-  switch (actionType) {
-    case ActionType.WARN:
-    case ActionType.REPEL:
-    case ActionType.TIMEOUT:
-      return 0xffff00; // Yellow
-    case ActionType.MUTE:
-    case ActionType.TEMP_MUTE:
-    case ActionType.KICK:
-      return 0xffa500; // Orange
-    case ActionType.BAN:
-    case ActionType.TEMP_BAN:
-      return 0xff0000; // Red
-    case ActionType.REVERT:
-      return 0x00ff00; // Green
-    default:
-      return 0xffa500; // Default to orange
-  }
-}
-
-/**
- * Format the action reason for display
- */
-function formatReason(reason: ActionReason): string {
-  return reason
-    .toLowerCase()
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (char: string) => char.toUpperCase());
-}
-
-/**
- * Get the emoji for an action type
- */
-function getActionEmoji(actionType: ActionType): string {
-  switch (actionType) {
-    case ActionType.WARN:
-      return "⚠️";
-    case ActionType.REPEL:
-      return "🚫";
-    case ActionType.TIMEOUT:
-      return "⏱️";
-    case ActionType.MUTE:
-    case ActionType.TEMP_MUTE:
-      return "🔇";
-    case ActionType.KICK:
-      return "👢";
-    case ActionType.BAN:
-    case ActionType.TEMP_BAN:
-      return "🔨";
-    case ActionType.REVERT:
-      return "✅";
-    default:
-      return "📋";
-  }
-}
-
-/**
- * Get the action type name for display
- */
-function getActionTypeName(actionType: ActionType): string {
-  switch (actionType) {
-    case ActionType.WARN:
-      return "Warning";
-    case ActionType.REPEL:
-      return "Repel";
-    case ActionType.TIMEOUT:
-      return "Timeout";
-    case ActionType.MUTE:
-      return "Mute";
-    case ActionType.TEMP_MUTE:
-      return "Temporary Mute";
-    case ActionType.KICK:
-      return "Kick";
-    case ActionType.BAN:
-      return "Ban";
-    case ActionType.TEMP_BAN:
-      return "Temporary Ban";
-    case ActionType.REVERT:
-      return "Revert";
-    default:
-      return "Action";
-  }
-}
 
 /**
  * Format timestamp for display

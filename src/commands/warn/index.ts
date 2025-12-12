@@ -2,6 +2,7 @@ import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ActionReason, ActionType } from "../../../generated/prisma/index.js";
 import { config } from "../../env.js";
 import { createActionDetails, createActionNotification } from "../../utils/action-embeds.js";
+import { REASON_CHOICES } from "../../utils/action-helpers.js";
 import { createAction, getDefaultExpiration } from "../../utils/actions.js";
 import { createSlashCommand } from "../helpers.js";
 
@@ -21,17 +22,7 @@ export const warn = createSlashCommand({
         description: "The reason for the warning",
         type: ApplicationCommandOptionType.String,
         required: true,
-        choices: [
-          { name: "Spam", value: ActionReason.SPAM },
-          { name: "Scam", value: ActionReason.SCAM },
-          { name: "Disruptive", value: ActionReason.DISRUPTIVE },
-          { name: "NSFW", value: ActionReason.NSFW },
-          { name: "Hate Speech", value: ActionReason.HATE_SPEECH },
-          { name: "Self Promotion", value: ActionReason.SELF_PROMOTION },
-          { name: "Job Posting", value: ActionReason.JOB_POSTING },
-          { name: "For Hire", value: ActionReason.FOR_HIRE },
-          { name: "Other", value: ActionReason.OTHER },
-        ],
+        choices: REASON_CHOICES,
       },
       {
         name: "note",
