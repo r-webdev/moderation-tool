@@ -2,8 +2,9 @@ import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ActionReason, ActionType } from "../../../generated/prisma/index.js";
 import { config } from "../../env.js";
 import { createActionDetails, createActionNotification } from "../../utils/action-embeds.js";
-import { BAN_TYPE_CHOICES, REASON_CHOICES } from "../../utils/action-helpers.js";
+import { BAN_TYPE_CHOICES, formatReason, REASON_CHOICES } from "../../utils/action-helpers.js";
 import { createAction, getDefaultExpiration } from "../../utils/actions.js";
+import { sendActionDM } from "../../utils/dm-user.js";
 import { createSlashCommand } from "../helpers.js";
 
 export const ban = createSlashCommand({
@@ -111,12 +112,7 @@ export const ban = createSlashCommand({
         return;
       }
 
-      // Execute the ban
-      await member.ban({
-        reason: finalNote,
-      });
-
-      // Create the action in the database
+      // Create the action in the database first
       const action = await createAction({
         userId: targetUser.id,
         moderatorUserId: interaction.user.id,
@@ -126,16 +122,35 @@ export const ban = createSlashCommand({
         expiresAt,
       });
 
+      // Send DM to user before banning (they won't be able to receive it after)
+      const dmResult = await sendActionDM({
+        user: targetUser,
+        actionType,
+        reason: formatReason(reason),
+        note: customNote,
+        guildName: interaction.guild?.name,
+        actionId: action.actionId,
+      });
+
+      // Execute the ban
+      await member.ban({
+        reason: finalNote,
+      });
+
       const notificationEmbed = createActionNotification({
         user: targetUser,
         actionType,
         reason,
       });
 
-      // Send notification embed as confirmation
       try {
         await interaction.followUp({
           embeds: [notificationEmbed],
+          ephemeral: true,
+        });
+        await interaction.followUp({
+          content: dmResult.message,
+          ephemeral: true,
         });
       } catch (error) {
         console.error("Error sending notification embed:", error);

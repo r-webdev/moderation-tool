@@ -2,8 +2,9 @@ import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import { ActionReason, ActionType } from "../../../generated/prisma/index.js";
 import { config } from "../../env.js";
 import { createActionDetails, createActionNotification } from "../../utils/action-embeds.js";
-import { REASON_CHOICES } from "../../utils/action-helpers.js";
+import { formatReason, REASON_CHOICES } from "../../utils/action-helpers.js";
 import { createAction, getDefaultExpiration } from "../../utils/actions.js";
+import { sendActionDM } from "../../utils/dm-user.js";
 import { createSlashCommand } from "../helpers.js";
 
 export const warn = createSlashCommand({
@@ -75,16 +76,31 @@ export const warn = createSlashCommand({
         expiresAt,
       });
 
+      // Send DM to the user
+      const dmResult = await sendActionDM({
+        user: targetUser,
+        actionType: ActionType.WARN,
+        reason: formatReason(reason),
+        note: customNote,
+        guildName: interaction.guild?.name,
+        actionId: action.actionId,
+      });
+
       const notificationEmbed = createActionNotification({
         user: targetUser,
         actionType: ActionType.WARN,
         reason,
       });
 
-      // Send notification embed as confirmation
       try {
         await interaction.followUp({
           embeds: [notificationEmbed],
+          ephemeral: true,
+        });
+        // empheral message only the mod can see
+        await interaction.followUp({
+          content: dmResult.message,
+          ephemeral: true,
         });
       } catch (error) {
         console.error("Error sending notification embed:", error);
