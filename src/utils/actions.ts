@@ -45,14 +45,14 @@ export const createAction = async (params: {
   const { userId, moderatorUserId, type, reason, note, expiresAt } = params;
 
   // Find or create the target user
-  await db.user.upsert({
+  const targetUser = await db.user.upsert({
     where: { discordUserId: userId },
     update: {},
     create: { discordUserId: userId },
   });
 
   // Find or create the moderator user
-  await db.user.upsert({
+  const moderator = await db.user.upsert({
     where: { discordUserId: moderatorUserId },
     update: {},
     create: { discordUserId: moderatorUserId },
@@ -61,8 +61,8 @@ export const createAction = async (params: {
   // Create the action with user and moderator relationships
   const action = await db.action.create({
     data: {
-      userId,
-      moderatorUserId,
+      userId: targetUser.discordUserId,
+      moderatorUserId: moderator.discordUserId,
       type,
       reason,
       note: note ?? null,

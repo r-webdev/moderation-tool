@@ -6,6 +6,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: "file:../data/moderation.db", // Match schema.prisma
+    url: "file:./data/moderation.db", // Relative to /app
   },
 });
