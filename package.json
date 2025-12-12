@@ -28,12 +28,14 @@
 		"@prisma/adapter-better-sqlite3": "^7.0.0",
 		"@prisma/client": "^7.0.0",
 		"better-sqlite3": "^11.0.0",
-		"discord.js": "^14.22.1"
+		"discord.js": "^14.22.1",
+		"node-cron": "^4.2.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
 		"@types/better-sqlite3": "^7.6.11",
 		"@types/node": "^24.5.2",
+		"@types/node-cron": "^3.0.11",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.1",
 		"prisma": "^7.0.0",
@@ -47,8 +49,8 @@
 		]
 	},
 	"pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3"
-    ]
-  }
+		"onlyBuiltDependencies": [
+			"better-sqlite3"
+		]
+	}
 }

@@ -1,7 +1,8 @@
-import type { Action, ActionReason, ActionType, User } from "../../generated/prisma/index.js";
+import type { Action, User } from "../../generated/prisma/index.js";
+import { ActionReason, ActionType } from "../../generated/prisma/index.js";
 import { db } from "./db.js";
 
-type ActionWithRelations = Action & {
+export type ActionWithRelations = Action & {
   user: User;
   moderator: User;
 };
@@ -81,4 +82,58 @@ export const createAction = async (params: {
   });
 
   return action;
+};
+
+/**
+ * Create a REVERT action to reverse a previous moderation action
+ * Note: This function does NOT update the original action's status - caller must handle that
+ * @param params Revert action parameters
+ * @returns The created REVERT action record with relationships
+ */
+export const createRevertAction = async (params: {
+  originalActionId: number;
+  moderatorUserId: string;
+  note: string;
+}): Promise<ActionWithRelations> => {
+  const { originalActionId, moderatorUserId, note } = params;
+
+  // Fetch the original action with relationships
+  const originalAction = await db.action.findUnique({
+    where: { actionId: originalActionId },
+    include: {
+      user: true,
+      moderator: true,
+    },
+  });
+
+  if (!originalAction) {
+    throw new Error(`Action with ID ${originalActionId} not found`);
+  }
+
+  // Find or create the moderator user (bot user)
+  const moderator = await db.user.upsert({
+    where: { discordUserId: moderatorUserId },
+    update: {},
+    create: { discordUserId: moderatorUserId },
+  });
+
+  // Create the REVERT action
+  const revertAction = await db.action.create({
+    data: {
+      userId: originalAction.userId, // Same user as original action
+      moderatorUserId: moderator.discordUserId,
+      type: ActionType.REVERT,
+      reason: ActionReason.OTHER,
+      note,
+      createdAt: Math.floor(Date.now() / 1000),
+      expiresAt: null, // REVERT actions don't expire
+      revertingActionId: originalActionId, // Link to original action
+    },
+    include: {
+      user: true,
+      moderator: true,
+    },
+  });
+
+  return revertAction;
 };
