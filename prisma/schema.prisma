@@ -55,8 +55,7 @@ enum ActionReason {
 }
 
 model User {
-  userId        Int    @id @default(autoincrement())
-  discordUserId String @unique
+  discordUserId String @id
   role          Role   @default(MEMBER)
 
   // A user can have many actions performed on them
@@ -68,10 +67,10 @@ model User {
 
 model Action {
   actionId          Int          @id @default(autoincrement())
-  userId            Int
+  userId            String
   type              ActionType
   status            ActionStatus @default(ACTIVE)
-  moderatorUserId   Int
+  moderatorUserId   String
   reason            ActionReason
   note              String?
   createdAt         Int
@@ -79,10 +78,10 @@ model Action {
   revertingActionId Int?         @unique
 
   // Relationship to the user this action was performed on
-  user User @relation("UserActions", fields: [userId], references: [userId])
+  user User @relation("UserActions", fields: [userId], references: [discordUserId])
 
   // Relationship to the moderator who performed this action
-  moderator User @relation("ModeratorActions", fields: [moderatorUserId], references: [userId])
+  moderator User @relation("ModeratorActions", fields: [moderatorUserId], references: [discordUserId])
 
   // Self-referential relationship: this action reverts another action
   revertingAction Action? @relation("ActionCorrections", fields: [revertingActionId], references: [actionId])
