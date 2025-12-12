@@ -1,5 +1,10 @@
-import type { Action, ActionReason, ActionType } from "../../generated/prisma/index.js";
+import type { Action, ActionReason, ActionType, User } from "../../generated/prisma/index.js";
 import { db } from "./db.js";
+
+type ActionWithRelations = Action & {
+  user: User;
+  moderator: User;
+};
 
 /**
  * Get default expiration time based on the severity of the action reason
@@ -41,7 +46,7 @@ export const createAction = async (params: {
   reason: ActionReason;
   note?: string;
   expiresAt?: number;
-}): Promise<Action> => {
+}): Promise<ActionWithRelations> => {
   const { userId, moderatorUserId, type, reason, note, expiresAt } = params;
 
   // Find or create the target user

@@ -1,6 +1,11 @@
 import { EmbedBuilder, type User } from "discord.js";
-import type { Action } from "../../generated/prisma/index.js";
+import type { Action, User as PrismaUser } from "../../generated/prisma/index.js";
 import { type ActionReason, ActionStatus, ActionType } from "../../generated/prisma/index.js";
+
+type ActionWithRelations = Action & {
+  user: PrismaUser;
+  moderator: PrismaUser;
+};
 
 /**
  * Get the color for an action based on its severity
@@ -124,7 +129,7 @@ function formatStatus(status: ActionStatus): string {
  * Used for database lookups and detailed action viewing
  * Note: Action must be fetched with user and moderator relationships included
  */
-export function createActionDetails(action: Action, targetUser?: User): EmbedBuilder {
+export function createActionDetails(action: ActionWithRelations, targetUser?: User): EmbedBuilder {
   // Extract Discord user IDs from the action relationships
   const targetUserId = action.user.discordUserId;
   const moderatorUserId = action.moderator.discordUserId;
