@@ -18,14 +18,14 @@ FROM base AS deps
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile --production
+RUN pnpm install --frozen-lockfile --production --ignore-scripts
 
 # Dev dependencies stage - Install all dependencies
 FROM base AS deps-dev
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Build stage - Compile TypeScript
 FROM deps-dev AS build
