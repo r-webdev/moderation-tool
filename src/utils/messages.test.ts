@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { replaceSpoilerHack, stripCode, stripEmoji } from "./messages.js";
+import { replaceSpoilerHack, stripCode, stripEmoji, jaccardSimilarity } from "./messages.js";
 
 describe("utils/messages -> stripCode", () => {
   it("should remove inline code blocks", () => {
@@ -69,5 +69,38 @@ describe("utils/messages -> replaceSpoilerHack", () => {
     const actual = replaceSpoilerHack(input, "<SPOILER>");
 
     assert.strictEqual(actual, expected);
+  });
+});
+
+describe("jaccardSimilarity - crosspost detection", () => {
+  it("catches identical self-promotion spam", () => {
+    const msg1 = "Check out my new portfolio website! Built with React and Tailwind";
+    const msg2 = "Check out my new portfolio website! Built with React and Tailwind";
+    const actual = jaccardSimilarity(msg1, msg2);
+
+    assert.strictEqual(actual, 1);
+  });
+
+  it("catches copy-paste spam with minor punctuation differences", () => {
+    const msg1 = "hey guys check out my new website!";
+    const msg2 = "hey guys, check out my new website";
+    const actual = jaccardSimilarity(msg1, msg2);
+
+    assert.strictEqual(actual, 1);
+  });
+
+  it("catches reordered messages", () => {
+    const msg1 = "I just launched my SaaS app! Check it out and let me know what you think";
+    const msg2 = "Check it out and let me know what you think! I just launched my SaaS app";
+    const actual = jaccardSimilarity(msg1, msg2);
+    assert.strictEqual(actual, 1);
+  });
+
+  it("does not flag similar but different questions", () => {
+    const msg1 = "How do I center a div in CSS?";
+    const msg2 = "How do I align a div to the right in CSS?";
+    const actual = jaccardSimilarity(msg1, msg2); // 0.5833333333333334
+
+    assert.ok(actual > 0.5 && actual < 0.8);
   });
 });
