@@ -23,6 +23,9 @@ export const config = {
   roles: {
     regularId: requireEnv("ROLE_REGULAR_ID"),
   },
+  channels: {
+    actionLogId: requireEnv("ACTION_LOG_CHANNEL_ID"),
+  },
   // Add more config sections as needed:
   // database: {
   //   url: requireEnv('DATABASE_URL'),

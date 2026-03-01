@@ -6,6 +6,11 @@ FROM node:${NODE_VERSION}-alpine AS base
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 
+# Disable interactive prompts for pnpm in CI/Docker
+ENV CI=true
+ENV npm_config_build_from_source=false
+ENV PNP_BUILD_FROM_SOURCE=false
+
 WORKDIR /app
 
 # Dependencies stage - Install production dependencies only

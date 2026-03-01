@@ -8,6 +8,7 @@
 		"build:ci": "rm -rf dist && NODE_ENV=production tsc --outDir dist",
 		"start:ci": "NODE_ENV=production node dist/index.js ",
 		"dev": "NODE_ENV=development tsx --watch src/index.ts",
+		"dev:docker": "docker compose --profile dev up --build",
 		"test": "tsx --test src/**/*.test.ts tests/*.test.ts",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint --fix .",
@@ -27,11 +28,15 @@
 	"dependencies": {
 		"@prisma/adapter-better-sqlite3": "^7.0.0",
 		"@prisma/client": "^7.0.0",
-		"discord.js": "^14.22.1"
+		"better-sqlite3": "^11.0.0",
+		"discord.js": "^14.22.1",
+		"node-cron": "^4.2.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
+		"@types/better-sqlite3": "^7.6.11",
 		"@types/node": "^24.5.2",
+		"@types/node-cron": "^3.0.11",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.1",
 		"prisma": "^7.0.0",
@@ -42,6 +47,11 @@
 		"*.{ts,js}": [
 			"biome format --write",
 			"biome lint --fix"
+		]
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"better-sqlite3"
 		]
 	}
 }
