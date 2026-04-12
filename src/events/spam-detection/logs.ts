@@ -50,9 +50,24 @@ export const createLogTextContent = <T extends Rule>(options: LogFunctionOptions
         );
         const flaggedMessage = options.messages[0];
         const affectedChannels = new Set(options.messages.map((message) => message.channelId));
-        content.push(
-          makeLogMessageTitleAndContent("Flagged Message", `\n\n${flaggedMessage.content}\n`)
-        );
+        const hasMessage = flaggedMessage.content && flaggedMessage.content.trim().length > 0;
+        const hasAttachments = flaggedMessage.attachments.size > 0;
+        if (hasMessage) {
+          content.push(
+            makeLogMessageTitleAndContent("Flagged Message", `\n\n${flaggedMessage.content}\n`)
+          );
+        }
+        if (hasAttachments) {
+          content.push(
+            makeLogMessageTitleAndContent(
+              "Flagged Message",
+              `\n\n[Attachment: ${flaggedMessage.attachments.first()?.name}]\n`
+            )
+          );
+        }
+        if (!hasMessage && !hasAttachments) {
+          content.push(makeLogMessageTitleAndContent("Flagged Message", `\n\n[No Text Content]\n`));
+        }
         content.push(SPACER);
         content.push(
           makeLogMessageTitleAndContent(
