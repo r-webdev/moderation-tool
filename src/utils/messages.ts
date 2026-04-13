@@ -1,4 +1,4 @@
-import { type Message, MessageType, type PartialMessage } from "discord.js";
+import { type Message, MessageType, type PartialMessage, PermissionFlagsBits } from "discord.js";
 
 export type GuildMessage = Message<true>;
 
@@ -43,4 +43,32 @@ const normalizeText = (text: string) => {
     .trim()
     .split(/\s+/)
     .filter(Boolean);
+};
+
+export const isDynoModerationMessage = (message: Message) => {
+  const phrases = [
+    "was banned",
+    "was unbanned",
+    "was kicked",
+    "was muted",
+    "was unmuted",
+    "has been warned",
+  ];
+  return phrases.some((phrase) =>
+    message.embeds.some((embed) => embed.description?.includes(phrase))
+  );
+};
+
+/**
+ * Checks if the message is in a channel where `@everyone` has permission to view
+ * @param message
+ * @returns true if the message is in a public channel, false otherwise
+ */
+export const isMessageInAPublicChannel = (message: Message | PartialMessage) => {
+  return (
+    message.inGuild() &&
+    message.channel
+      .permissionsFor(message.guild.roles.everyone)
+      .has(PermissionFlagsBits.ViewChannel)
+  );
 };
